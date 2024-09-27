@@ -138,7 +138,22 @@ export default function Auth() {
                 )}
 
                 {/* Botón para enviar el formulario */}
+                {isSignIn ? 
                 <Button
+                variant="contained"
+                color="primary"
+                sx={{ 
+                    marginTop: '1rem', 
+                    bgcolor: '#077d6b', 
+                    width: '100%', 
+                    '&:hover': { bgcolor: '#065b52' },
+                }}
+                type="submit"
+                href='/allPages'
+            >
+                Iniciar Sesión
+            </Button> :
+             <Button
                     variant="contained"
                     color="primary"
                     sx={{ 
@@ -148,9 +163,11 @@ export default function Auth() {
                         '&:hover': { bgcolor: '#065b52' },
                     }}
                     type="submit"
+                    href='/auth'
                 >
-                    {isSignIn ? 'Iniciar Sesión' : 'Registrarme'}
-                </Button>
+                    Registrarme
+                </Button>}
+                
 
                 {/* Divider */}
                 <Divider sx={{ bgcolor: 'black', marginTop: 2, marginBottom: 1, width: '100%' }} />
