@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { Box, Button, Divider, TextField, Typography } from '@mui/material';
+import { Box, Button, Divider, TextField, Typography, Grid } from '@mui/material';
 import Image from 'next/image';
 
 export default function Auth() {
@@ -15,15 +15,17 @@ export default function Auth() {
                 justifyContent: 'center',
                 minHeight: '100vh',
                 bgcolor: '#f5f5f5',
+                padding: { xs: '1rem', sm: '2rem' }, // Padding responsivo
             }}
         >
             {/* Formulario basado en el estado */}
-            <Box sx={{ display: 'flex', width: '29%' }}>
+            <Grid container spacing={2} sx={{ width: '100%', maxWidth: '400px', marginBottom: '1rem' }}>
+                <Grid item xs={6}>
                     <Button
                         variant={isSignIn ? 'contained' : 'outlined'}
-                        sx={{ 
-                            flex: 1, 
-                            bgcolor: isSignIn ? '#077d6b' : 'transparent', 
+                        sx={{
+                            width: '100%',
+                            bgcolor: isSignIn ? '#077d6b' : 'transparent',
                             color: isSignIn ? 'white' : '#077d6b',
                             borderColor: '#077d6b',
                             '&:hover': { bgcolor: isSignIn ? '#065b52' : '#e0f2f1' }
@@ -32,11 +34,13 @@ export default function Auth() {
                     >
                         Iniciar Sesión
                     </Button>
+                </Grid>
+                <Grid item xs={6}>
                     <Button
                         variant={!isSignIn ? 'contained' : 'outlined'}
-                        sx={{ 
-                            flex: 1, 
-                            bgcolor: !isSignIn ? '#077d6b' : 'transparent', 
+                        sx={{
+                            width: '100%',
+                            bgcolor: !isSignIn ? '#077d6b' : 'transparent',
                             color: !isSignIn ? 'white' : '#077d6b',
                             borderColor: '#077d6b',
                             '&:hover': { bgcolor: !isSignIn ? '#065b52' : '#e0f2f1' }
@@ -45,7 +49,9 @@ export default function Auth() {
                     >
                         Registrarme
                     </Button>
-                </Box>
+                </Grid>
+            </Grid>
+            
             <Box
                 component="form"
                 sx={{
@@ -57,17 +63,16 @@ export default function Auth() {
                     boxShadow: 1,
                     padding: '2rem',
                     bgcolor: 'white',
-                    marginTop: { xs: '1rem', md: '0' },
                 }}
                 noValidate
                 autoComplete="off"
             >
                 {/* Imagen centrada arriba del texto */}
-                <Image 
-                    src="/logo.png" 
-                    alt="Logo" 
-                    width={100} 
-                    height={100} 
+                <Image
+                    src="/logo.png"
+                    alt="Logo"
+                    width={100}
+                    height={100}
                     style={{ marginBottom: '1rem' }}
                 />
 
@@ -112,7 +117,7 @@ export default function Auth() {
                             fullWidth
                         />
                         <TextField
-                            label="Telefono"
+                            label="Teléfono"
                             variant="outlined"
                             margin="normal"
                             required
@@ -138,40 +143,23 @@ export default function Auth() {
                 )}
 
                 {/* Botón para enviar el formulario */}
-                {isSignIn ? 
                 <Button
-                variant="contained"
-                color="primary"
-                sx={{ 
-                    marginTop: '1rem', 
-                    bgcolor: '#077d6b', 
-                    width: '100%', 
-                    '&:hover': { bgcolor: '#065b52' },
-                }}
-                type="submit"
-                href='/allPages'
-            >
-                Iniciar Sesión
-            </Button> :
-             <Button
                     variant="contained"
                     color="primary"
-                    sx={{ 
-                        marginTop: '1rem', 
-                        bgcolor: '#077d6b', 
-                        width: '100%', 
+                    sx={{
+                        marginTop: '1rem',
+                        bgcolor: '#077d6b',
+                        width: '100%',
                         '&:hover': { bgcolor: '#065b52' },
                     }}
                     type="submit"
-                    href='/auth'
+                    href={isSignIn ? '/allPages' : '/auth'}
                 >
-                    Registrarme
-                </Button>}
-                
+                    {isSignIn ? 'Iniciar Sesión' : 'Registrarme'}
+                </Button>
 
                 {/* Divider */}
                 <Divider sx={{ bgcolor: 'black', marginTop: 2, marginBottom: 1, width: '100%' }} />
-                
             </Box>
         </Box>
     );
