@@ -20,6 +20,7 @@ import HistoryIcon from '@mui/icons-material/History';
 import PaymentIcon from '@mui/icons-material/Payment';
 import MopedIcon from '@mui/icons-material/Moped';
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useState } from 'react';
 import { Home } from '@mui/icons-material';
 const drawerWidth = 240;
@@ -76,15 +77,16 @@ export default function Navbar() {
     { route: 'allPages/pedido', label: 'Mi Pedido', icon: <MopedIcon /> },
     { route: 'allPages/historal', label: 'Historial de compras', icon: <HistoryIcon /> },
     { route: 'allPages/payment', label: 'Formas de Pago', icon: <PaymentIcon /> },
+    { route: '/', label: 'Salir', icon: <LogoutIcon /> },
   ];
   
   const drawer = (
     <div>
-      <List>
+      <List >
         <ListItem disablePadding>
-          <ListItemButton href='/allPages/profile'>
+          <ListItemButton sx={{height:47}} href='/allPages/profile'>
             <ListItemIcon>
-              <Avatar {...stringAvatar('Adrian Morales')} />
+              <Avatar  {...stringAvatar('Adrian Morales')} />
             </ListItemIcon>
             <ListItemText primary="Hola Adrian" />
           </ListItemButton>
