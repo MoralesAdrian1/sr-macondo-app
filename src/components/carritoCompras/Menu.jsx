@@ -39,39 +39,35 @@ const MenuModal = ({ open, onClose, products, stationName }) => {
   };
 
   const totalQuantity = quantities.reduce((acc, curr) => acc + curr, 0);
+  const totalPrice = products.reduce((acc, curr, index) => acc + curr.precio * quantities[index], 0);
 
   const handleClose = () => {
     if (totalQuantity > 0) {
-      setAlertOpen(true); // Abre el modal de alerta si hay productos seleccionados
+      setAlertOpen(true);
     } else {
       resetQuantities();
-      onClose(); // Cierra el modal si no hay productos seleccionados
+      onClose();
     }
   };
 
   const handleAlertClose = (confirm) => {
     if (confirm) {
       resetQuantities();
-      onClose(); // Cierra el modal principal
+      onClose();
     }
-    setAlertOpen(false); // Siempre cierra el modal de alerta
+    setAlertOpen(false);
   };
 
   const resetQuantities = () => {
-    setQuantities(Array(products.length).fill(0)); // Reinicia los contadores a cero
+    setQuantities(Array(products.length).fill(0));
   };
 
   const handleAddToCart = () => {
-    // Lógica para añadir al carrito
     console.log('Añadir al carrito:', quantities);
-
-    // Mostrar el Snackbar
     setSnackbarMessage("Productos añadidos al carrito!");
     setSnackbarOpen(true);
-
-    // Cerrar el modal principal
     onClose();
-    resetQuantities(); // Reiniciar cantidades después de añadir al carrito
+    resetQuantities();
   };
 
   return (
@@ -91,8 +87,7 @@ const MenuModal = ({ open, onClose, products, stationName }) => {
             {products.map((producto, index) => (
               <ListItem key={index}>
                 <ListItemText
-                  primary={producto}
-                  secondary={`Detalles de ${producto}`}
+                  primary={`${producto.producto} - $${producto.precio}`} // Display name and price
                 />
                 <IconButton edge="end" aria-label="remove" onClick={() => decreaseQuantity(index)}>
                   <RemoveIcon />
@@ -108,22 +103,25 @@ const MenuModal = ({ open, onClose, products, stationName }) => {
           </List>
           <Divider sx={{ bgcolor: 'black', my: 2 }} />
           <Typography variant="h6">Total de productos: {totalQuantity}</Typography>
+          <Typography variant="h6">Total a pagar: ${totalPrice}</Typography> {/* Display total price */}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} color="error" variant="outlined"
+            >
             Cerrar
           </Button>
           <Button
             onClick={handleAddToCart}
             color="primary"
             disabled={totalQuantity === 0}
+            variant="contained"
+            sx={{bgcolor:"#077d6b"}}
           >
             Añadir al carrito
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Modal de alerta */}
       <Dialog open={alertOpen} onClose={() => handleAlertClose(false)}>
         <DialogTitle>Atención</DialogTitle>
         <DialogContent>
@@ -132,7 +130,7 @@ const MenuModal = ({ open, onClose, products, stationName }) => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button variant="outlined" sx={{ color: '#077d6b' }} onClick={() => handleAlertClose(true)}>
+          <Button variant="outlined" color="error" onClick={() => handleAlertClose(true)}>
             Confirmar
           </Button>
           <Button variant="contained" sx={{ bgcolor: '#077d6b' }} onClick={() => handleAlertClose(false)}>
@@ -141,18 +139,16 @@ const MenuModal = ({ open, onClose, products, stationName }) => {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar para mostrar mensaje de éxito */}
-      <Snackbar open={snackbarOpen} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} autoHideDuration={3000} onClose={handleClose}>
-  <Alert
-     onClose={() => setSnackbarOpen(false)}
-    severity="success"
-    variant="filled"
-    sx={{ width: '100%' }}
-  >
-    Los Productos se añadieron al carrito exitosamente!
-  </Alert>
-</Snackbar>
-
+      <Snackbar open={snackbarOpen} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} autoHideDuration={3000} onClose={() => setSnackbarOpen(false)}>
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Los Productos se añadieron al carrito exitosamente!
+        </Alert>
+      </Snackbar>
     </>
   );
 };

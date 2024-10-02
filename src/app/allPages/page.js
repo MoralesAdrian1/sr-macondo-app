@@ -12,47 +12,63 @@ import {
   Typography,
 } from "@mui/material";
 import MenuModal from "@/components/carritoCompras/Menu";
- // Asegúrate de que la ruta sea correcta
 
 export default function Home() {
   const [open, setOpen] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const [station, setStation] = useState("");
 
   const stations = [
     {
       label: "Principal",
       description: "Café, Ensaladas, Fruta y más",
       imgPath: "/img1.jpg",
-      productos: ["Frape", "Café de olla"],
+      productos: [
+        { producto: "Torta", precio: 35 },
+        { producto: "Chilaquiles", precio: 35 },
+      ],
     },
     {
       label: "Tiendita",
       description: "Sabritas, Refrescos, dulces y más",
       imgPath: "/img1.jpg",
-      productos: ["Papas", "Refrescos"],
+      productos: [
+        { producto: "Papas", precio: 20 },
+        { producto: "Refrescos", precio: 20 },
+      ],
     },
     {
       label: "Fuente de Sodas",
       description: "Café, Ensaladas, Fruta y más",
       imgPath: "/img1.jpg",
-      productos: ["Frape", "Café de olla"],
+      productos: [
+        { producto: "Frape", precio: 20 },
+        { producto: "Café de olla", precio: 20 },
+      ],
     },
     {
       label: "Guisados",
       description: "Guisados, Gorditas y Quesadillas",
       imgPath: "/img1.jpg",
-      productos: ["Guisados", "Gorditas" , "Quesadillas"],
+      productos: [
+        { producto: "Guisados", precio: 20 },
+        { producto: "Gorditas", precio: 20 },
+      ],
     },
     {
       label: "Tacos",
       description: "Tacos, Quesadillas y Tortas",
       imgPath: "/img1.jpg",
-      productos: ["Orden de Suadero", "Orden de Pastor"],
+      productos: [
+        { producto: "Orden de Suadero", precio: 60 },
+        { producto: "Orden de Pastor", precio: 60 },
+      ],
     },
   ];
 
-  const handleOpen = (productos) => {
-    setSelectedProducts(productos);
+  const handleOpen = (productos, station) => {
+    setStation(station);
+    setSelectedProducts(productos); // Aquí pasamos directamente los productos sin descomponer
     setOpen(true);
   };
 
@@ -62,13 +78,12 @@ export default function Home() {
 
   return (
     <>
-      {/* contenido de la página */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           p: 3,
-          marginLeft: { xs: 0, sm: "240px" }, // 0 en pantallas pequeñas y 240px en pantallas medianas en adelante
+          marginLeft: { xs: 0, sm: "240px" },
           width: { sm: `calc(100% - 240px)` },
         }}
       >
@@ -91,9 +106,8 @@ export default function Home() {
                     <Typography variant="body2" color="text.secondary">
                       {station.description}
                     </Typography>
-
                     <Button
-                      onClick={() => handleOpen(station.productos)} // Llama a handleOpen con los productos de la estación
+                      onClick={() => handleOpen(station.productos, station.label)} // Pasamos directamente los productos
                       variant="contained"
                       sx={{
                         bgcolor: "#077d6b",
@@ -102,7 +116,7 @@ export default function Home() {
                         marginLeft: "auto",
                         marginRight: "auto",
                         textAlign: "center",
-                      }} // Centra el botón
+                      }}
                     >
                       Ver Menú
                     </Button>
@@ -113,9 +127,7 @@ export default function Home() {
           </Grid>
         </Box>
       </Box>
-
-      {/* Modal para mostrar productos */}
-      <MenuModal open={open} onClose={handleClose} products={selectedProducts} />
+      <MenuModal open={open} onClose={handleClose} products={selectedProducts} stationName={station} /> {/* Usamos el estado station aquí */}
     </>
   );
 }
