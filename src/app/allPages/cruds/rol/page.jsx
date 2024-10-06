@@ -115,7 +115,16 @@ export default function Crud() {
   ];
 
   return (
-    <Container>
+    <Box
+    component="main"
+    sx={{
+      flexGrow: 1,
+      p: 3,
+      marginLeft: { xs: 0, sm: "240px" },
+      width: { sm: `calc(100% - 240px)` },
+    }}
+  >
+   <Container>
       <Snackbar anchorOrigin={{ vertical: "top", horizontal: "center" }} open={positive} autoHideDuration={4000} onClose={handleCloseEvent}>
         <Alert onClose={handleCloseEvent} severity="success" variant="filled" sx={{ width: '100%' }}>
           ¡Proceso completado con éxito!
@@ -176,5 +185,8 @@ export default function Crud() {
         </DialogActions>
       </Dialog>
     </Container>
+  </Box>
+
+ 
   );
 }
