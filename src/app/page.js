@@ -24,10 +24,18 @@ const stations = [
   {label: 'Tacos',description:'Café, Ensaladas, Fruta y mas', imgPath:'/img1.jpg',prouctos:['Frape','Cafe de olla']}
 ]
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export default function Home() {
   const [activeStep, setActiveStep] = useState(0);
-  const maxSteps = images.length;
+  const [data, setData] = useState([]);
+  const [data2, setData2] = useState([]);
 
+  const maxSteps = images.length;
+  useEffect(() => {
+    if (!data.length && !data2.length) {
+      fetchData();
+    }
+  }, []);
   useEffect(() => {
     const timer = setInterval(() => {
       handleNext();
@@ -35,6 +43,41 @@ export default function Home() {
 
     return () => clearInterval(timer);
   }, [activeStep]);
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`${API_URL}/stand`);
+      const result = await response.json();
+      setData(result);
+      const response2 = await fetch(`${API_URL}/product`);
+      const result2 = await response2.json();
+      setData2(result2);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  const groupedProducts = data2.reduce((acc, product) => {
+    const stand = data.find(stand => stand._id === product.standId);
+    if (!stand) return acc;
+    if (!acc[product.standId]) {
+      acc[product.standId] = {
+        standId: product.standId,
+        standName: stand.name,
+        products: []
+      };
+    }
+ acc[product.standId].products.push({
+      productName: product.name
+    });
+  
+    return acc;
+  }, {});
+  const result = Object.values(groupedProducts);
+  
+  console.log(result);
+  
+  
+  console.log(data);
+  console.log(data2);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => (prevActiveStep + 1) % maxSteps);
@@ -150,34 +193,35 @@ export default function Home() {
     {/* sección de cards*/}
     <Box sx={{ p: 2 }}>
   <Grid container spacing={2}>
-    {stations.map((station, index) => (
+    {result.map((stand, index) => (
       <Grid item xs={12} sm={6} md={4} key={index}>
         <Card>
+          {/* Aquí deberías asignar una imagen si corresponde */}
           <CardMedia
             component="img"
             height="140"
-            image={station.imgPath}
-            alt={station.label}
+            image="/img1.jpg" // Puedes asignar dinámicamente las imágenes si las tienes disponibles
+            alt={stand.standName}
           />
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
-              {station.label}
+              {stand.standName}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {station.description}
-            </Typography>
+
             {/* Título de Productos */}
             <Typography variant="h6" color="text.secondary" sx={{ mt: 1 }}>
               Productos
             </Typography>
+
             {/* Lista de productos */}
             <List sx={{ p: 0, mb: 2 }}> {/* Ajusta el padding y margen inferior */}
-              {station.prouctos.map((producto, idx) => (
+              {stand.products.map((product, idx) => (
                 <ListItem key={idx} sx={{ padding: 0 }}> {/* Elimina el padding de ListItem */}
-                  <ListItemText primary={producto} />
+                  <ListItemText primary={product.productName} />
                 </ListItem>
               ))}
             </List>
+
             <Button 
               href='/auth' 
               variant="contained" 
@@ -191,6 +235,7 @@ export default function Home() {
     ))}
   </Grid>
 </Box>
+
 
   </Box>
   );

@@ -70,7 +70,7 @@ export default function Navbar() {
     setMobileOpen(!mobileOpen);
   };
 
-  
+  //user
   const routes = [
     { route: 'allPages/', label: 'Home', icon: <Home /> },
     { route: 'allPages/carrito', label: 'Mi Carrito', icon: <ShoppingCartIcon /> },
@@ -79,12 +79,34 @@ export default function Navbar() {
     { route: 'allPages/payment', label: 'Formas de Pago', icon: <PaymentIcon /> },
     { route: '/', label: 'Salir', icon: <LogoutIcon /> },
   ];
+  //solo superAdmin
   const cruds = [
-    {route:'allPages/productos', label:'Productos',icon: <Home/>},
-    {route:'allPages/rol', label:'Productos',icon: <Home/>},
-    {route:'allPages/puesto', label:'Productos',icon: <Home/>},
-    {route:'allPages/productos', label:'Productos',icon: <Home/>},
+    {route:'allPages/cruds/productos', label:'Productos',icon: <Home/>},
+    {route:'allPages/cruds/rol', label:'rol',icon: <Home/>},
+    {route:'allPages/cruds/pedidos', label:'pedidos',icon: <Home/>},
+    {route:'allPages/cruds/puesto', label:'puesto',icon: <Home/>},
+    {route:'allPages/cruds/transacciones', label:'transacciones',icon: <Home/>},
   ]
+  //admin
+  const adminRoutes =[
+    {route:'allPages/ingresos', label:'Productos',icon: <Home/>},
+  ]
+  //encargado
+  const encargadosRoutes =[
+    {route:'allPages/encargados/encargos', label:'Productos',icon: <Home/>},
+    {route:'allPages/encargados/tacos', label:'Productos',icon: <Home/>},
+    {route:'allPages/encargados/tiendita', label:'Productos',icon: <Home/>},
+    {route:'allPages/encargados/principal', label:'Productos',icon: <Home/>},
+    {route:'allPages/encargados/guisados', label:'Productos',icon: <Home/>},
+    {route:'allPages/encargados/pizza', label:'Productos',icon: <Home/>},
+    {route:'allPages/encargados/fsodas', label:'Productos',icon: <Home/>},
+  ]
+  //repartidor
+  const repartidor = [
+    {route:'allPages/repartidor', label:'Productos',icon: <Home/>},
+    {route:'allPages/repartidor/encargos', label:'Productos',icon: <Home/>},
+  ]
+  
   
   const drawer = (
     <div>
