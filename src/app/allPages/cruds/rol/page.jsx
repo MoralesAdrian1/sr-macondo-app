@@ -11,7 +11,7 @@ import { DataGrid } from '@mui/x-data-grid';
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Crud() {
-  const [formData, setFormData] = useState({ name: "" });
+  const [formData, setFormData] = useState({ nombre: "" });
   const [data, setData] = useState([]);
   const [editId, setEditId] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -67,7 +67,7 @@ export default function Crud() {
         const newItem = await response.json();
         setData([...data, newItem]);
       }
-      setFormData({ name: "" });
+      setFormData({ nombre: "" });
       setDialogOpen(false);
       setPositive(true);
     } catch (error) {
@@ -144,16 +144,18 @@ export default function Crud() {
         <Grid item xs={12}>
           <Button
             variant="contained"
-            color="primary"
             startIcon={<Add />}
             onClick={() => setDialogOpen(true)}
+            sx={
+              {bgcolor:"#077d6b"}
+            }
           >
             Agregar Rol
           </Button>
         </Grid>
       </Grid>
 
-      <Box sx={{ height: 400, width: '100%', marginTop: 4 }}>
+      <Box sx={{ height: 400, width: '100%', marginTop: 2 }}>
         <DataGrid
           rows={data}
           columns={columns}
