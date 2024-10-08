@@ -16,12 +16,19 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
 const MenuModal = ({ open, onClose, products, standName, setCart }) => {
   const [quantities, setQuantities] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [warningModalOpen, setWarningModalOpen] = useState(false); // Estado para el modal de advertencia
+  const [value, setValue] = React.useState(2);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   useEffect(() => {
     setQuantities(Array(products.length).fill(0)); // Reinicia las cantidades al abrir el modal
@@ -98,6 +105,23 @@ const MenuModal = ({ open, onClose, products, standName, setCart }) => {
           {standName ? `Menú de ${standName}` : "Menú"}
         </DialogTitle>
         <Divider sx={{ bgcolor: "#077d6b" }} />
+        <Tabs 
+         variant="fullWidth"
+  sx={{ 
+    color: "#077d6b", 
+  }} 
+  value={value} 
+  onChange={handleChange} 
+  aria-label="disabled tabs example"
+  TabIndicatorProps={{ 
+    sx: { backgroundColor: "#077d6b" } 
+  }}
+>
+  <Tab sx={{ color: value === 0 ? "#077d6b" : "inherit" }} label="Tacos" />
+  <Tab sx={{ color: value === 1 ? "#077d6b" : "inherit" }} label="Tortas" />
+  <Tab sx={{ color: value === 2 ? "#077d6b" : "inherit" }} label="Quesadillas" />
+</Tabs>
+
         <DialogContent>
           {products.length > 0 ? (
             <List>
@@ -148,7 +172,7 @@ const MenuModal = ({ open, onClose, products, standName, setCart }) => {
             variant="contained"
             sx={{ bgcolor: "#077d6b" }}
           >
-            Añadir al carrito (${totalPrice.toFixed(2)}) {/* Muestra el precio total */}
+            Añadir al carrito (${totalPrice.toFixed(2)})
           </Button>
         </DialogActions>
       </Dialog>
