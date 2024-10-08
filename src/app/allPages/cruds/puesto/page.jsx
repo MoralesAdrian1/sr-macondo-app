@@ -18,6 +18,7 @@ export default function Crud() {
   const [positive, setPositive] = useState(false);
   const [negative, setNegative] = useState(false);
 
+  
   useEffect(() => {
     fetchData();
   }, []);
