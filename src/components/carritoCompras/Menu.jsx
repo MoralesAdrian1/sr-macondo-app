@@ -1,28 +1,31 @@
-"use client";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  Button,
+  DialogContent,
+  DialogTitle,
   Typography,
-  Divider,
+  Button,
   List,
   ListItem,
-  IconButton,
-  Snackbar,
   ListItemText,
+  Divider,
+  Snackbar,
   Alert,
+  IconButton,
 } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-import { useState } from "react";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
-const MenuModal = ({ open, onClose, products, stationName }) => {
-  const [quantities, setQuantities] = useState(Array(products.length).fill(0));
-  const [alertOpen, setAlertOpen] = useState(false);
+const MenuModal = ({ open, onClose, products, standName, setCart }) => {
+  const [quantities, setQuantities] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [warningModalOpen, setWarningModalOpen] = useState(false); // Estado para el modal de advertencia
+
+  useEffect(() => {
+    setQuantities(Array(products.length).fill(0)); // Reinicia las cantidades al abrir el modal
+  }, [products]);
 
   const increaseQuantity = (index) => {
     const newQuantities = [...quantities];
@@ -39,75 +42,103 @@ const MenuModal = ({ open, onClose, products, stationName }) => {
   };
 
   const totalQuantity = quantities.reduce((acc, curr) => acc + curr, 0);
-  const totalPrice = products.reduce((acc, curr, index) => acc + curr.precio * quantities[index], 0);
 
-  const handleClose = () => {
-    if (totalQuantity > 0) {
-      setAlertOpen(true);
-    } else {
-      resetQuantities();
-      onClose();
-    }
-  };
+  // Calcular el precio total de los productos seleccionados
+  const totalPrice = products.reduce((acc, product, index) => {
+    return acc + product.price * quantities[index];
+  }, 0);
 
-  const handleAlertClose = (confirm) => {
-    if (confirm) {
-      resetQuantities();
-      onClose();
-    }
-    setAlertOpen(false);
+  // Guardar los productos seleccionados en el carrito
+  const handleAddToCart = () => {
+    const selectedProducts = products
+      .map((product, index) => ({
+        name: product.name,
+        standName: standName,
+        price: product.price,
+        quantity: quantities[index], // Incluir la cantidad seleccionada
+      }))
+      .filter((item) => item.quantity > 0); // Solo guardar los productos con cantidad mayor a 0
+
+    // Actualizar el carrito con los productos seleccionados
+    setCart((prevCart) => [...prevCart, ...selectedProducts]);
+
+    console.log("Productos añadidos al carrito:", selectedProducts);
+    setSnackbarMessage("Productos añadidos al carrito!");
+    setSnackbarOpen(true);
+    resetQuantities();
+    onClose();
   };
 
   const resetQuantities = () => {
     setQuantities(Array(products.length).fill(0));
   };
 
-  const handleAddToCart = () => {
-    console.log('Añadir al carrito:', quantities);
-    setSnackbarMessage("Productos añadidos al carrito!");
-    setSnackbarOpen(true);
-    onClose();
-    resetQuantities();
+  const handleClose = () => {
+    if (totalQuantity > 0) {
+      setWarningModalOpen(true); // Mostrar el modal de advertencia
+    } else {
+      onClose(); // Cerrar normalmente
+    }
+  };
+
+  const handleWarningClose = () => {
+    setWarningModalOpen(false); // Cerrar el modal de advertencia
+  };
+
+  const handleConfirmClose = () => {
+    resetQuantities(); // Reiniciar cantidades al confirmar cierre
+    setWarningModalOpen(false); // Cerrar modal de advertencia
+    onClose(); // Cerrar modal principal
   };
 
   return (
     <>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>
-          <Typography variant="h4" sx={{ padding: 2, color: 'white', bgcolor: '#077d6b' }}>
-            Estación: {stationName}
-          </Typography>
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ textAlign: "center", color: "white", bgcolor: "#077d6b" }}>
+          {standName ? `Menú de ${standName}` : "Menú"}
         </DialogTitle>
-        <Divider sx={{ bgcolor: 'black' }} />
+        <Divider sx={{ bgcolor: "#077d6b" }} />
         <DialogContent>
-          <Typography variant="h6">Productos Disponibles:</Typography>
-          <Divider sx={{ bgcolor: '#077d6b' }} />
-          <br />
-          <List dense>
-            {products.map((producto, index) => (
-              <ListItem key={index}>
-                <ListItemText
-                  primary={`${producto.producto} - $${producto.precio}`} // Display name and price
-                />
-                <IconButton edge="end" aria-label="remove" onClick={() => decreaseQuantity(index)}>
-                  <RemoveIcon />
-                </IconButton>
-                <Typography variant="body2" sx={{ mx: 1 }}>
-                  {quantities[index]}
-                </Typography>
-                <IconButton edge="end" aria-label="add" onClick={() => increaseQuantity(index)}>
-                  <AddIcon />
-                </IconButton>
-              </ListItem>
-            ))}
-          </List>
-          <Divider sx={{ bgcolor: 'black', my: 2 }} />
-          <Typography variant="h6">Total de productos: {totalQuantity}</Typography>
-          <Typography variant="h6">Total a pagar: ${totalPrice}</Typography> {/* Display total price */}
+          {products.length > 0 ? (
+            <List>
+              {products.map((product, index) => (
+                <React.Fragment key={index}>
+                  <ListItem>
+                    <ListItemText
+                      primary={product.name}
+                      secondary={
+                        <>
+                          <Typography component="span" variant="body4" color="text.primary" sx={{ fontSize: '0.8rem' }}>
+                            {product.description}
+                          </Typography>
+                          <Typography component="span" variant="body2" color="text.secondary" sx={{ display: "block", mt: 1 }}>
+                            Precio: ${product.price.toFixed(2)}
+                          </Typography>
+                        </>
+                      }
+                    />
+                    <IconButton onClick={() => decreaseQuantity(index)}>
+                      <RemoveIcon />
+                    </IconButton>
+                    <Typography variant="body2" sx={{ mx: 1 }}>
+                      {quantities[index]}
+                    </Typography>
+                    <IconButton onClick={() => increaseQuantity(index)}>
+                      <AddIcon />
+                    </IconButton>
+                  </ListItem>
+                  {index < products.length - 1 && <Divider sx={{ bgcolor: "#077d6b" }} />} {/* Divide entre productos */}
+                </React.Fragment>
+              ))}
+            </List>
+          ) : (
+            <Typography variant="body1" color="textSecondary">
+              No hay productos disponibles para este stand.
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="error" variant="outlined"
-            >
+          <Button variant="outlined" color="error" onClick={handleClose}>
             Cerrar
           </Button>
           <Button
@@ -115,38 +146,40 @@ const MenuModal = ({ open, onClose, products, stationName }) => {
             color="primary"
             disabled={totalQuantity === 0}
             variant="contained"
-            sx={{bgcolor:"#077d6b"}}
+            sx={{ bgcolor: "#077d6b" }}
           >
-            Añadir al carrito
+            Añadir al carrito (${totalPrice.toFixed(2)}) {/* Muestra el precio total */}
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={alertOpen} onClose={() => handleAlertClose(false)}>
-        <DialogTitle>Atención</DialogTitle>
+      {/* Modal de advertencia */}
+      <Dialog open={warningModalOpen} onClose={handleWarningClose}>
+        <DialogTitle sx={{ textAlign: "center", color: "white", bgcolor: "#FF474C" }}>Advertencia</DialogTitle>
         <DialogContent>
           <Typography>
-            Se perderán los artículos seleccionados. ¿Deseas continuar?
+            Tienes productos seleccionados. Si cierras el menú, perderás los cambios. ¿Estás seguro de que deseas cerrar?
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button variant="outlined" color="error" onClick={() => handleAlertClose(true)}>
-            Confirmar
+          <Button variant="outlined" onClick={handleConfirmClose} color="error">
+            Cerrar y perder cambios
           </Button>
-          <Button variant="contained" sx={{ bgcolor: '#077d6b' }} onClick={() => handleAlertClose(false)}>
+          <Button variant="contained" onClick={handleWarningClose} sx={{ bgcolor: "#077d6b" }}>
             Cancelar
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Snackbar open={snackbarOpen} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} autoHideDuration={3000} onClose={() => setSnackbarOpen(false)}>
-        <Alert
-          onClose={() => setSnackbarOpen(false)}
-          severity="success"
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          Los Productos se añadieron al carrito exitosamente!
+      {/* Snackbar de éxito */}
+      <Snackbar
+        open={snackbarOpen}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity="success" variant="filled" sx={{ width: "100%" }}>
+          {snackbarMessage}
         </Alert>
       </Snackbar>
     </>

@@ -1,0 +1,140 @@
+"use client";
+import { useEffect, useState } from "react";
+import Navbar from "@/components/navigation/navbar";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Grid,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import MenuModal from "@/components/carritoCompras/Menu";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export default function HomeAllPages() {
+  const [data, setData] = useState([]);  // Stands
+  const [data2, setData2] = useState([]);  // Productos
+  const [open, setOpen] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [station, setStation] = useState("");
+  const [selectedStandId, setSelectedStandId] = useState(""); 
+  const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    if (!data.length && !data2.length) {
+      fetchData();
+    }
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`${API_URL}/stand`);
+      const result = await response.json();
+      setData(result);  // Guardamos los stands
+      const response2 = await fetch(`${API_URL}/product`);
+      const result2 = await response2.json();
+      setData2(result2);  // Guardamos los productos
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // Agrupamos los productos por standId
+  const groupedProducts = data2.reduce((acc, product) => {
+    const stand = data.find((stand) => stand._id === product.standId);
+    if (!stand) return acc;
+    if (!acc[product.standId]) {
+      acc[product.standId] = {
+        standId: product.standId,
+        standName: stand.name,
+        products: [],
+      };
+    }
+    acc[product.standId].products.push({
+      productName: product.name,
+      description: product.description,
+      price: product.price,
+    });
+
+    return acc;
+  }, {});
+
+  const result = Object.values(groupedProducts);
+
+  const handleOpen = (stationName, standId) => {
+    setStation(stationName);
+    setSelectedStandId(standId); // Guardamos el standId seleccionado
+    // Filtramos los productos del stand seleccionado
+    const selectedProducts = data2.filter(product => product.standId === standId);
+    setSelectedProducts(selectedProducts);  // Guardamos los productos filtrados
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          marginLeft: { xs: 0, sm: "240px" },
+          width: { sm: `calc(100% - 240px)` },
+        }}
+      >
+        <Toolbar />
+        <Box sx={{ p: 2 }}>
+          <Grid container spacing={2}>
+            {result.map((stand, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Card>
+                  <CardMedia
+                    component="img"
+                    height="140"
+                    image="/img1.jpg"
+                    alt={stand.standName}
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {stand.standName}
+                    </Typography>
+                    <Button
+                      onClick={() => handleOpen(stand.standName, stand.standId)} // Solo pasamos el standId al abrir el modal
+                      variant="contained"
+                      sx={{
+                        bgcolor: "#077d6b",
+                        mt: 2,
+                        display: "block",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        textAlign: "center",
+                      }}
+                    >
+                      Ver Menú
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </Box>
+
+      {/* Pasamos los productos filtrados y el nombre del stand al modal */}
+      <MenuModal
+        open={open}
+        onClose={handleClose}
+        products={selectedProducts}  // Los productos filtrados se envían aquí
+        standName={station}  // Enviamos el nombre del stand seleccionado
+        setCart={setCart}
+      />
+    </>
+  );
+}
