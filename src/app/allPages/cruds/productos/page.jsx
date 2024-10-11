@@ -18,6 +18,8 @@ import {
   Select,
   InputLabel,
   FormControl,
+  FormControlLabel,
+  Switch, // Importar Switch para un toggle de disponibilidad
 } from "@mui/material";
 import { Edit, Delete, Add } from "@mui/icons-material";
 import { DataGrid } from '@mui/x-data-grid';
@@ -29,11 +31,13 @@ export default function ProductoCrud() {
     name: "",
     description: "",
     price: 0,
-    availability: 0,
+    availability: false, // Cambiado de 0 a false
     standId: "",
+    catProductId:""
   });
   const [data, setData] = useState([]);
   const [dataStand, setDataStand] = useState([]);
+  const [dataCat,setDataCat] = useState([]);
   const [editId, setEditId] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [positive, setPositive] = useState(false);
@@ -53,6 +57,10 @@ export default function ProductoCrud() {
       const response2 = await fetch(`${API_URL}/stand`);
       const result2 = await response2.json(); // Cambiado para usar response2
       setDataStand(result2); // Asignar los datos de los stands
+
+      const response3 = await fetch(`${API_URL}/catProduct`);
+      const result3 = await response3.json(); 
+      setDataCat(result3); 
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -64,18 +72,26 @@ export default function ProductoCrud() {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    // Manejar los valores booleanos correctamente
+    const newValue = type === "checkbox" ? checked : value;
+    setFormData({ ...formData, [name]: newValue });
   };
 
   const handleSelectChange = (e) => {
-    setFormData({ ...formData, standId: e.target.value });
+    const { name, value } = e.target;
+    console.log("Select change:", name, value); // Debug para ver el valor seleccionado
+    setFormData({ ...formData, [name]: value }); // Actualiza el campo correcto
   };
+  
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Submitting formData:", formData);
     try {
       const response = await fetch(`${API_URL}/product`, {
-        method: "POST",
+        method: editId ? "PUT" : "POST", // Usar PUT si es edición
         headers: {
           "Content-Type": "application/json",
         },
@@ -83,20 +99,26 @@ export default function ProductoCrud() {
       });
       const result = await response.json();
       if (response.ok) {
-        setData([...data, result]); // Actualiza el estado con el nuevo producto
-        setSnackMessage("Producto creado exitosamente");
+        if (editId) {
+          setData(data.map(item => item._id === editId ? result : item));
+          setSnackMessage("Producto actualizado exitosamente");
+        } else {
+          setData([...data, result]); // Actualiza el estado con el nuevo producto
+          setSnackMessage("Producto creado exitosamente");
+        }
         setPositive(true);
       } else {
-        setSnackMessage("Error al crear producto");
+        setSnackMessage("Error al guardar producto");
         setNegative(true);
       }
     } catch (error) {
-      console.error("Error creating product:", error);
-      setSnackMessage("Error al crear producto");
+      console.error("Error saving product:", error);
+      setSnackMessage("Error al guardar producto");
       setNegative(true);
     } finally {
       setDialogOpen(false); // Cierra el diálogo después de enviar
-      setFormData({ name: "", description: "", price: 0, availability: 0, standId: "" }); // Reinicia el formulario
+      setFormData({ name: "", description: "", price: 0, availability: false, standId: "",catProductId:"" }); // Reinicia el formulario
+      setEditId(null); // Reinicia el ID de edición
     }
   };
 
@@ -154,34 +176,42 @@ export default function ProductoCrud() {
             </Button>
           </Grid>
           <Grid item xs={12}>
-            <DataGrid
-              rows={data}
-              getRowId={(row) => row._id}
-              columns={[
-                { field: "name", headerName: "Nombre", flex: 1 },
-                { field: "description", headerName: "Descripción", flex: 1 },
-                { field: "price", headerName: "Precio", flex: 1 },
-                { field: "availability", headerName: "Disponibilidad", flex: 1 },
-                { field: "standId", headerName: "IDStand", flex: 1 },
-                {
-                  field: "actions",
-                  headerName: "Acciones",
-                  renderCell: (params) => (
-                    <>
-                      <IconButton onClick={() => handleEdit(params.row._id)}>
-                        <Edit />
-                      </IconButton>
-                      <IconButton onClick={() => handleDelete(params.row._id)}>
-                        <Delete />
-                      </IconButton>
-                    </>
-                  ),
-                },
-              ]}
-              autoHeight
-              pageSize={5}
-            />
-          </Grid>
+  <DataGrid
+    rows={data}
+    getRowId={(row) => row._id}
+    columns={[
+      { field: "name", headerName: "Nombre", flex: 1 },
+      { field: "description", headerName: "Descripción", flex: 1 },
+      { field: "price", headerName: "Precio", flex: 1 },
+      {
+        field: "availability",
+        headerName: "Disponibilidad",
+        flex: 1,
+        renderCell: (params) => (params.row.availability ? "Disponible" : "No Disponible"), // Cambia el valor 0 o 1 por true o false.
+      },
+      { field: "standId", headerName: "ID Stand", flex: 1 },
+      { field: "catProductId", headerName: "ID Categoría Producto", flex: 1 }, // Nueva columna para catProductId
+      { field: "_id", headerName: "ID Producto", flex: 1 }, // Nueva columna para _id
+      {
+        field: "actions",
+        headerName: "Acciones",
+        renderCell: (params) => (
+          <>
+            <IconButton onClick={() => handleEdit(params.row._id)}>
+              <Edit />
+            </IconButton>
+            <IconButton onClick={() => handleDelete(params.row._id)}>
+              <Delete />
+            </IconButton>
+          </>
+        ),
+      },
+    ]}
+    autoHeight
+    pageSize={5}
+  />
+</Grid>
+
         </Grid>
       </Container>
 
@@ -216,30 +246,50 @@ export default function ProductoCrud() {
             onChange={handleChange}
             required
           />
-          <TextField
-            margin="dense"
-            name="availability"
-            label="Disponibilidad"
-            type="number"
-            fullWidth
-            value={formData.availability}
-            onChange={handleChange}
+          <FormControlLabel
+            control={
+              <Switch
+                checked={formData.availability}
+                onChange={handleChange}
+                name="availability"
+                color="primary"
+              />
+            }
+            label="Disponible"
           />
           <FormControl fullWidth margin="dense">
-            <InputLabel>Seleccionar Stand</InputLabel>
-            <Select
-              value={formData.standId}
-              onChange={handleSelectChange}
-              label="Seleccionar Stand"
-              required
-            >
-              {dataStand.map((stand) => (
-                <MenuItem key={stand._id} value={stand._id}>
-                  {stand.name} {/* Aquí puedes mostrar el nombre del stand */}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+  <InputLabel>Seleccionar Stand</InputLabel>
+  <Select
+    name="standId" // Añadir el atributo name para identificar el campo
+    value={formData.standId}
+    onChange={handleSelectChange} // Usar una sola función para ambos selects
+    label="Seleccionar Stand"
+    required
+  >
+    {dataStand.map((stand) => (
+      <MenuItem key={stand._id} value={stand._id}>
+        {stand.name} {/* Aquí puedes mostrar el nombre del stand */}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
+
+<FormControl fullWidth margin="dense">
+  <InputLabel>Seleccionar Categoria</InputLabel>
+  <Select
+    name="catProductId" // Añadir el atributo name para identificar el campo
+    value={formData.catProductId}
+    onChange={handleSelectChange} // Usar la misma función para ambos selects
+    label="Seleccionar Categoria"
+    required
+  >
+    {dataCat.map((cat) => (
+      <MenuItem key={cat._id} value={cat._id}>
+        {cat.name} {/* Aquí puedes mostrar el nombre de la categoría */}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancelar</Button>

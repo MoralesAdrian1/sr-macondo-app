@@ -3,11 +3,7 @@ import React, { useState, useEffect } from "react";
 import {
   Container, TextField, Button, Grid, Typography, 
   IconButton, Box, Snackbar, Alert, Dialog, DialogActions,
-  DialogContent, DialogTitle,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem
+  DialogContent, DialogTitle
 } from "@mui/material";
 import { Edit, Delete, Add } from "@mui/icons-material";
 import { DataGrid } from '@mui/x-data-grid';
@@ -15,8 +11,7 @@ import { DataGrid } from '@mui/x-data-grid';
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Crud() {
-  const [formData, setFormData] = useState({ name: "",catStandId:"" });
-  const [dataCat,setDataCat] = useState([]);
+  const [formData, setFormData] = useState({ name: "" });
   const [data, setData] = useState([]);
   const [editId, setEditId] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -30,13 +25,9 @@ export default function Crud() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${API_URL}/stand`);
+      const response = await fetch(`http://localhost:3000/api/catStand`);
       const result = await response.json();
       setData(result);
-
-      const response3 = await fetch(`${API_URL}/catStand`);
-      const result3 = await response3.json(); 
-      setDataCat(result3); 
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -51,18 +42,12 @@ export default function Crud() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSelectChange = (e) => {
-    const { name, value } = e.target;
-    console.log("Select change:", name, value); // Debug para ver el valor seleccionado
-    setFormData({ ...formData, [name]: value }); // Actualiza el campo correcto
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (editId) {
         // Actualizar registro
-        await fetch(`${API_URL}/stand/${editId}`, {
+        await fetch(`http://localhost:3000/api/catStand${editId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -73,7 +58,7 @@ export default function Crud() {
         setEditId(null);
       } else {
         // Crear nuevo registro
-        const response = await fetch(`${API_URL}/stand`, {
+        const response = await fetch(`http://localhost:3000/api/catStand`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -83,7 +68,7 @@ export default function Crud() {
         const newItem = await response.json();
         setData([...data, newItem]);
       }
-      setFormData({ name: "", catStandId:"" });
+      setFormData({ name: "" });
       setDialogOpen(false);
       setPositive(true);
     } catch (error) {
@@ -101,7 +86,7 @@ export default function Crud() {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`${API_URL}/stand/${id}`, { method: "DELETE" });
+      await fetch(`http://localhost:3000/api/catStand/${id}`, { method: "DELETE" });
       setData(data.filter((item) => item._id !== id));
       setPositive(true);
     } catch (error) {
@@ -113,7 +98,6 @@ export default function Crud() {
   const columns = [
     { field: '_id', headerName: 'ID', width: 200 },
     { field: 'name', headerName: 'Stand', width: 300 },
-    { field: "catStandId", headerName: "ID Categoría stand", flex: 1 },
     {
       field: 'acciones',
       headerName: 'Acciones',
@@ -191,22 +175,6 @@ export default function Crud() {
             required
             margin="dense"
           />
-          <FormControl fullWidth margin="dense">
-  <InputLabel>Seleccionar Categoria</InputLabel>
-  <Select
-    name="catStandId" // Cambié catProductId por catStandId para que coincida con formData
-    value={formData.catStandId}
-    onChange={handleSelectChange} // Usar la misma función para manejar el cambio
-    label="Seleccionar Categoria"
-    required
-  >
-    {dataCat.map((cat) => (
-      <MenuItem key={cat._id} value={cat._id}>
-        {cat.name} {/* Mostrar el nombre de la categoría */}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleSubmit} color="primary" variant="contained">

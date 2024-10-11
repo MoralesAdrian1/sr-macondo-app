@@ -16,13 +16,6 @@ const images = [
   { label: 'Imagen 2', imgPath: '/img2.jpg' },
   { label: 'Imagen 3', imgPath: '/img3.jpg' }
 ];
-const stations = [
-  {label: 'Principal',description:'Café, Ensaladas, Fruta y mas', imgPath:'/img1.jpg',prouctos:['Frape','Cafe de olla']},
-  {label: 'Tiendita',description:'Sabritas, Refrescos, dulces y mas', imgPath:'/img1.jpg',prouctos:['Papas','Refrescos']},
-  {label: 'Fuente de Sodas',description:'Café, Ensaladas, Fruta y mas', imgPath:'/img1.jpg',prouctos:['Frape','Cafe de olla']},
-  {label: 'Guisados',description:'Café, Ensaladas, Fruta y mas', imgPath:'/img1.jpg',prouctos:['Frape','Cafe de olla']},
-  {label: 'Tacos',description:'Café, Ensaladas, Fruta y mas', imgPath:'/img1.jpg',prouctos:['Frape','Cafe de olla']}
-]
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export default function HomeComponent() {

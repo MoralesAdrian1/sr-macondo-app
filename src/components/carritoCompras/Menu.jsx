@@ -19,16 +19,27 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
-const MenuModal = ({ open, onClose, products, standName, setCart }) => {
+const MenuModal = ({ open, onClose, products, standName, setCart, categories = [] }) => {
   const [quantities, setQuantities] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [warningModalOpen, setWarningModalOpen] = useState(false); // Estado para el modal de advertencia
   const [value, setValue] = React.useState(2);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  
+  // Filtrar las categorías relevantes solo para los productos de este stand
+  const relevantCategories = categories.filter(category =>
+    products.some(product => product.catProductId === category._id)
+  );
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    setSelectedCategoryId(newValue === 0 ? null : relevantCategories[newValue - 1]._id); // Seteamos la categoría seleccionada o todas
   };
+  
+  // Filtramos los productos por la categoría seleccionada
+  const filteredProducts = selectedCategoryId
+    ? products.filter(product => product.catProductId === selectedCategoryId)
+    : products; // Si no hay categoría seleccionada, mostramos todos los productos
 
   useEffect(() => {
     setQuantities(Array(products.length).fill(0)); // Reinicia las cantidades al abrir el modal
@@ -105,27 +116,30 @@ const MenuModal = ({ open, onClose, products, standName, setCart }) => {
           {standName ? `Menú de ${standName}` : "Menú"}
         </DialogTitle>
         <Divider sx={{ bgcolor: "#077d6b" }} />
-        <Tabs 
-         variant="fullWidth"
-  sx={{ 
-    color: "#077d6b", 
-  }} 
-  value={value} 
-  onChange={handleChange} 
-  aria-label="disabled tabs example"
-  TabIndicatorProps={{ 
-    sx: { backgroundColor: "#077d6b" } 
-  }}
->
-  <Tab sx={{ color: value === 0 ? "#077d6b" : "inherit" }} label="Tacos" />
-  <Tab sx={{ color: value === 1 ? "#077d6b" : "inherit" }} label="Tortas" />
-  <Tab sx={{ color: value === 2 ? "#077d6b" : "inherit" }} label="Quesadillas" />
-</Tabs>
+        <Tabs
+          variant="fullWidth"
+          sx={{ color: "#077d6b" }}
+          value={selectedCategoryId === null ? 0 : relevantCategories.findIndex(cat => cat._id === selectedCategoryId) + 1}
+          onChange={handleChange}
+          aria-label="category tabs"
+          TabIndicatorProps={{
+            sx: { backgroundColor: "#077d6b" }
+          }}
+        >
+          <Tab sx={{ color: selectedCategoryId === null ? "#077d6b" : "inherit" }} label="Todos" />
+          {relevantCategories.map((category, index) => (
+            <Tab
+              key={category._id}
+              sx={{ color: selectedCategoryId === category._id ? "#077d6b" : "inherit" }}
+              label={category.name}
+            />
+          ))}
+        </Tabs>
 
         <DialogContent>
-          {products.length > 0 ? (
+          {filteredProducts.length > 0 ? (
             <List>
-              {products.map((product, index) => (
+              {filteredProducts.map((product, index) => (
                 <React.Fragment key={index}>
                   <ListItem>
                     <ListItemText
@@ -162,8 +176,8 @@ const MenuModal = ({ open, onClose, products, standName, setCart }) => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button variant="outlined" color="error" onClick={handleClose}>
-            Cerrar
+          <Button variant="contained" color="error" onClick={handleClose}>
+            Cancelar
           </Button>
           <Button
             onClick={handleAddToCart}

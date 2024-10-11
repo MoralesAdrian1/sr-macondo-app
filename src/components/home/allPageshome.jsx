@@ -18,6 +18,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export default function HomeAllPages() {
   const [data, setData] = useState([]);  // Stands
   const [data2, setData2] = useState([]);  // Productos
+  const [data3,setData3]= useState([]);
   const [open, setOpen] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [station, setStation] = useState("");
@@ -38,32 +39,52 @@ export default function HomeAllPages() {
       const response2 = await fetch(`${API_URL}/product`);
       const result2 = await response2.json();
       setData2(result2);  // Guardamos los productos
+      const response3 = await fetch(`${API_URL}/catProduct`);
+      const result3 = await response3.json();
+      setData3(result3);  // Guardamos las categorias de productos
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+  console.log(data2)
 
   // Agrupamos los productos por standId
   const groupedProducts = data2.reduce((acc, product) => {
     const stand = data.find((stand) => stand._id === product.standId);
-    if (!stand) return acc;
+    const category = data3.find((cat) => cat._id === product.catProductId);
+    
+    if (!stand || !category) return acc;
+  
+    // Si el stand no existe en acc, lo creamos
     if (!acc[product.standId]) {
       acc[product.standId] = {
         standId: product.standId,
         standName: stand.name,
+        categories: {},
+      };
+    }
+  
+    // Si la categoría no existe dentro del stand, la creamos
+    if (!acc[product.standId].categories[category._id]) {
+      acc[product.standId].categories[category._id] = {
+        categoryId: category._id,
+        categoryName: category.name,
         products: [],
       };
     }
-    acc[product.standId].products.push({
+  
+    // Añadimos el producto a la categoría correspondiente
+    acc[product.standId].categories[category._id].products.push({
       productName: product.name,
       description: product.description,
       price: product.price,
     });
-
+  
     return acc;
   }, {});
-
-  const result = Object.values(groupedProducts);
+  
+  const result = Object.values(groupedProducts);  // Convertir en array para iterar fácilmente
+  console.log(result);
 
   const handleOpen = (stationName, standId) => {
     setStation(stationName);
@@ -89,6 +110,7 @@ export default function HomeAllPages() {
           width: { sm: `calc(100% - 240px)` },
         }}
       >
+ 
         <Toolbar />
         <Box sx={{ p: 2 }}>
           <Grid container spacing={2}>
@@ -129,12 +151,13 @@ export default function HomeAllPages() {
 
       {/* Pasamos los productos filtrados y el nombre del stand al modal */}
       <MenuModal
-        open={open}
-        onClose={handleClose}
-        products={selectedProducts}  // Los productos filtrados se envían aquí
-        standName={station}  // Enviamos el nombre del stand seleccionado
-        setCart={setCart}
-      />
+  open={open}
+  onClose={handleClose}
+  products={selectedProducts}  // Los productos filtrados se envían aquí
+  standName={station}  // Enviamos el nombre del stand seleccionado
+  setCart={setCart}
+  categories={data3}  // Pasamos las categorías de productos al modal
+/>
     </>
   );
 }
