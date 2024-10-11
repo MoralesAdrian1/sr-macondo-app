@@ -115,26 +115,47 @@ const MenuModal = ({ open, onClose, products, standName, setCart, categories = [
         <DialogTitle sx={{ textAlign: "center", color: "white", bgcolor: "#077d6b" }}>
           {standName ? `Menú de ${standName}` : "Menú"}
         </DialogTitle>
-        <Divider sx={{ bgcolor: "#077d6b" }} />
+        
         <Tabs
-          variant="fullWidth"
-          sx={{ color: "#077d6b" }}
-          value={selectedCategoryId === null ? 0 : relevantCategories.findIndex(cat => cat._id === selectedCategoryId) + 1}
-          onChange={handleChange}
-          aria-label="category tabs"
-          TabIndicatorProps={{
-            sx: { backgroundColor: "#077d6b" }
-          }}
-        >
-          <Tab sx={{ color: selectedCategoryId === null ? "#077d6b" : "inherit" }} label="Todos" />
-          {relevantCategories.map((category, index) => (
-            <Tab
-              key={category._id}
-              sx={{ color: selectedCategoryId === category._id ? "#077d6b" : "inherit" }}
-              label={category.name}
-            />
-          ))}
-        </Tabs>
+  variant="fullWidth"
+  sx={{ color: "#077d6b" }}
+  value={selectedCategoryId === null ? 0 : relevantCategories.findIndex(cat => cat._id === selectedCategoryId) + 1}
+  onChange={handleChange}
+  aria-label="category tabs"
+  TabIndicatorProps={{
+    sx: { backgroundColor: "#077d6b" }
+  }}
+>
+  <Tab
+    sx={{
+      backgroundColor: selectedCategoryId === null ? "#077d6b" : "white",
+      color: selectedCategoryId === null ? "white" : "#077d6b",
+      '&:hover': {
+        backgroundColor: selectedCategoryId === null ? "#077d6b" : "rgba(7, 125, 107, 0.1)",
+      },
+      '&.Mui-selected': {
+        color: "white !important", // Asegúrate de que el texto seleccionado sea blanco
+      },
+    }}
+    label="Todos"
+  />
+  {relevantCategories.map((category) => (
+    <Tab
+      key={category._id}
+      sx={{
+        backgroundColor: selectedCategoryId === category._id ? "#077d6b" : "white",
+        color: selectedCategoryId === category._id ? "white" : "#077d6b",
+        '&:hover': {
+          backgroundColor: selectedCategoryId === category._id ? "#077d6b" : "rgba(7, 125, 107, 0.1)",
+        },
+        '&.Mui-selected': {
+          color: "white !important", // Asegúrate de que el texto seleccionado sea blanco
+        },
+      }}
+      label={category.name}
+    />
+  ))}
+</Tabs>
 
         <DialogContent>
           {filteredProducts.length > 0 ? (
