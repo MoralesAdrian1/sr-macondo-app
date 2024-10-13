@@ -149,10 +149,13 @@ export default function HomeAllPages() {
           sx={{
             display: "flex",
             overflowX: "auto", // Permite el desplazamiento horizontal
-            whiteSpace: "nowrap", // Asegura que los elementos no se rompan a la siguiente línea
+            whiteSpace: "nowrap",
+            border: "2px solid #077d6b", // Borde de 2px color rojo
+          borderRadius: "1px",
             p: 1,
             justifyContent: { xs: "flex-start", md: "center" },  // Centramos en pantallas grandes
           }}
+          
         >
           {/* Filtro de Todos */}
           <div
@@ -169,13 +172,15 @@ export default function HomeAllPages() {
             <img
               src="/iconos/cocinero.gif" // Imagen genérica para el filtro "Todos"
               alt="Todos los stands"
-              style={{ width: "150px", height: "150px", objectFit: "cover" }}
+              style={{ width: "100px", height: "100px", objectFit: "cover" }}
             />
             <Typography
-              variant="subtitle1"
-              sx={{
-                display: { xs: "none", sm: "block" }, // Ocultar el texto en móvil
-              }}
+  variant="subtitle1"
+  sx={{
+    whiteSpace: "normal", 
+    fontSize: { xs: "12px", sm: "16px" },
+    textAlign: "center",
+  }}
             >
               Todos
             </Typography>
@@ -198,16 +203,18 @@ export default function HomeAllPages() {
               <img
                 src={getImageSource(category.name)} // Get image based on category name
                 alt={category.name}
-                style={{ width: "150px", height: "150px", objectFit: "cover" }}
+                style={{ width: "100px", height: "100px", objectFit: "cover" }}
               />
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  display: { xs: "none", sm: "block" }, // Ocultar el texto en móvil
-                }}
-              >
-                {category.name}
-              </Typography>
+             <Typography
+  variant="subtitle1"
+  sx={{
+    whiteSpace: "normal", 
+    fontSize: { xs: "12px", sm: "16px" },
+    textAlign: "center",
+  }}
+>
+  {category.name}
+</Typography>
             </div>
           ))}
         </Box>
