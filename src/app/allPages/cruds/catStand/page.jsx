@@ -47,7 +47,7 @@ export default function Crud() {
     try {
       if (editId) {
         // Actualizar registro
-        await fetch(`${API_URL}/catStand${editId}`, {
+        await fetch(`${API_URL}/catStand/${editId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

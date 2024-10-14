@@ -150,6 +150,7 @@ export default function SignIn() {
             "&:hover": { bgcolor: "#065b52" },
           }}
           type="submit"
+          href="/allPages"
         >
           {isLoading ? "Cargando..." : "Iniciar Sesión"}
         </Button>
