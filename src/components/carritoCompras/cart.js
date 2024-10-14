@@ -11,7 +11,7 @@ import {
     Typography,
     Divider,
   } from "@mui/material";
-
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export default function AddToCart({ exporProducts, onClose }) {
     const [data, setData] = useState([]);
     const [open, setOpen] = useState(true);
@@ -30,6 +30,7 @@ export default function AddToCart({ exporProducts, onClose }) {
         }
     };
     console.log(data);
+    console.log(exporProducts);
     return (
         <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
           <DialogTitle sx={{ textAlign: "center", bgcolor: "#077d6b", color: "white" }}>
