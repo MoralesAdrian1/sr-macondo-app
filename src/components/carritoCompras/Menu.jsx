@@ -13,36 +13,37 @@ import {
   Snackbar,
   Alert,
   IconButton,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+import AddToCart from "./cart";
 
 const MenuModal = ({ open, onClose, products, standName, setCart, categories = [] }) => {
   const [quantities, setQuantities] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [warningModalOpen, setWarningModalOpen] = useState(false); // Estado para el modal de advertencia
-  const [value, setValue] = React.useState(2);
+  const [warningModalOpen, setWarningModalOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-  
+  const [exporProducts, setExporProducts] = useState([]);
+  const [showCartModal, setShowCartModal] = useState(false); // Estado para controlar el modal AddToCart
+
   // Filtrar las categorías relevantes solo para los productos de este stand
   const relevantCategories = categories.filter(category =>
     products.some(product => product.catProductId === category._id)
   );
 
   const handleChange = (event, newValue) => {
-    setSelectedCategoryId(newValue === 0 ? null : relevantCategories[newValue - 1]._id); // Seteamos la categoría seleccionada o todas
+    setSelectedCategoryId(newValue === 0 ? null : relevantCategories[newValue - 1]._id);
   };
-  
-  // Filtramos los productos por la categoría seleccionada
+
   const filteredProducts = selectedCategoryId
     ? products.filter(product => product.catProductId === selectedCategoryId)
-    : products; // Si no hay categoría seleccionada, mostramos todos los productos
+    : products;
 
   useEffect(() => {
-    setQuantities(Array(products.length).fill(0)); // Reinicia las cantidades al abrir el modal
+    setQuantities(Array(products.length).fill(0));
   }, [products]);
 
   const increaseQuantity = (index) => {
@@ -61,30 +62,27 @@ const MenuModal = ({ open, onClose, products, standName, setCart, categories = [
 
   const totalQuantity = quantities.reduce((acc, curr) => acc + curr, 0);
 
-  // Calcular el precio total de los productos seleccionados
   const totalPrice = products.reduce((acc, product, index) => {
     return acc + product.price * quantities[index];
   }, 0);
 
-  // Guardar los productos seleccionados en el carrito
   const handleAddToCart = () => {
     const selectedProducts = products
       .map((product, index) => ({
-        name: product.name,
-        standName: standName,
-        price: product.price,
-        quantity: quantities[index], // Incluir la cantidad seleccionada
+        productId: product._id,
+        standId: product.standId,
+        quantity: quantities[index],
       }))
-      .filter((item) => item.quantity > 0); // Solo guardar los productos con cantidad mayor a 0
+      .filter((item) => item.quantity > 0);
 
-    // Actualizar el carrito con los productos seleccionados
     setCart((prevCart) => [...prevCart, ...selectedProducts]);
 
-    console.log("Productos añadidos al carrito:", selectedProducts);
+    setExporProducts(selectedProducts);
     setSnackbarMessage("Productos añadidos al carrito!");
     setSnackbarOpen(true);
     resetQuantities();
     onClose();
+    setShowCartModal(true); // Abrir el modal AddToCart
   };
 
   const resetQuantities = () => {
@@ -93,20 +91,25 @@ const MenuModal = ({ open, onClose, products, standName, setCart, categories = [
 
   const handleClose = () => {
     if (totalQuantity > 0) {
-      setWarningModalOpen(true); // Mostrar el modal de advertencia
+      setWarningModalOpen(true);
     } else {
-      onClose(); // Cerrar normalmente
+      onClose();
     }
   };
 
   const handleWarningClose = () => {
-    setWarningModalOpen(false); // Cerrar el modal de advertencia
+    setWarningModalOpen(false);
   };
 
   const handleConfirmClose = () => {
-    resetQuantities(); // Reiniciar cantidades al confirmar cierre
-    setWarningModalOpen(false); // Cerrar modal de advertencia
-    onClose(); // Cerrar modal principal
+    resetQuantities();
+    setWarningModalOpen(false);
+    onClose();
+  };
+
+  // Manejar el cierre del modal AddToCart
+  const handleAddToCartClose = () => {
+    setShowCartModal(false);
   };
 
   return (
@@ -115,47 +118,47 @@ const MenuModal = ({ open, onClose, products, standName, setCart, categories = [
         <DialogTitle sx={{ textAlign: "center", color: "white", bgcolor: "#077d6b" }}>
           {standName ? `Menú de ${standName}` : "Menú"}
         </DialogTitle>
-        
+
         <Tabs
-  variant="fullWidth"
-  sx={{ color: "#077d6b" }}
-  value={selectedCategoryId === null ? 0 : relevantCategories.findIndex(cat => cat._id === selectedCategoryId) + 1}
-  onChange={handleChange}
-  aria-label="category tabs"
-  TabIndicatorProps={{
-    sx: { backgroundColor: "#077d6b" }
-  }}
->
-  <Tab
-    sx={{
-      backgroundColor: selectedCategoryId === null ? "#077d6b" : "white",
-      color: selectedCategoryId === null ? "white" : "#077d6b",
-      '&:hover': {
-        backgroundColor: selectedCategoryId === null ? "#077d6b" : "rgba(7, 125, 107, 0.1)",
-      },
-      '&.Mui-selected': {
-        color: "white !important", // Asegúrate de que el texto seleccionado sea blanco
-      },
-    }}
-    label="Todos"
-  />
-  {relevantCategories.map((category) => (
-    <Tab
-      key={category._id}
-      sx={{
-        backgroundColor: selectedCategoryId === category._id ? "#077d6b" : "white",
-        color: selectedCategoryId === category._id ? "white" : "#077d6b",
-        '&:hover': {
-          backgroundColor: selectedCategoryId === category._id ? "#077d6b" : "rgba(7, 125, 107, 0.1)",
-        },
-        '&.Mui-selected': {
-          color: "white !important", // Asegúrate de que el texto seleccionado sea blanco
-        },
-      }}
-      label={category.name}
-    />
-  ))}
-</Tabs>
+          variant="fullWidth"
+          sx={{ color: "#077d6b" }}
+          value={selectedCategoryId === null ? 0 : relevantCategories.findIndex(cat => cat._id === selectedCategoryId) + 1}
+          onChange={handleChange}
+          aria-label="category tabs"
+          TabIndicatorProps={{
+            sx: { backgroundColor: "#077d6b" }
+          }}
+        >
+          <Tab
+            sx={{
+              backgroundColor: selectedCategoryId === null ? "#077d6b" : "white",
+              color: selectedCategoryId === null ? "white" : "#077d6b",
+              '&:hover': {
+                backgroundColor: selectedCategoryId === null ? "#077d6b" : "rgba(7, 125, 107, 0.1)",
+              },
+              '&.Mui-selected': {
+                color: "white !important",
+              },
+            }}
+            label="Todos"
+          />
+          {relevantCategories.map((category) => (
+            <Tab
+              key={category._id}
+              sx={{
+                backgroundColor: selectedCategoryId === category._id ? "#077d6b" : "white",
+                color: selectedCategoryId === category._id ? "white" : "#077d6b",
+                '&:hover': {
+                  backgroundColor: selectedCategoryId === category._id ? "#077d6b" : "rgba(7, 125, 107, 0.1)",
+                },
+                '&.Mui-selected': {
+                  color: "white !important",
+                },
+              }}
+              label={category.name}
+            />
+          ))}
+        </Tabs>
 
         <DialogContent>
           {filteredProducts.length > 0 ? (
@@ -186,7 +189,7 @@ const MenuModal = ({ open, onClose, products, standName, setCart, categories = [
                       <AddIcon />
                     </IconButton>
                   </ListItem>
-                  {index < products.length - 1 && <Divider sx={{ bgcolor: "#077d6b" }} />} {/* Divide entre productos */}
+                  {index < products.length - 1 && <Divider sx={{ bgcolor: "#077d6b" }} />}
                 </React.Fragment>
               ))}
             </List>
@@ -230,14 +233,12 @@ const MenuModal = ({ open, onClose, products, standName, setCart, categories = [
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar de éxito */}
-      <Snackbar
-        open={snackbarOpen}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
-      >
-        <Alert onClose={() => setSnackbarOpen(false)} severity="success" variant="filled" sx={{ width: "100%" }}>
+      {/* Modal de productos añadidos al carrito */}
+      {showCartModal && <AddToCart exporProducts={exporProducts} onClose={handleAddToCartClose} />}
+      
+      {/* Snackbar para mostrar el mensaje de éxito */}
+      <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={() => setSnackbarOpen(false)}>
+        <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: "100%" }}>
           {snackbarMessage}
         </Alert>
       </Snackbar>
