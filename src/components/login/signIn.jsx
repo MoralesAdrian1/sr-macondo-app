@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import Image from "next/image";
-import { saveToken } from "@/services/auth";
+import { saveToken, saveUser } from "@/services/auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -67,6 +67,7 @@ export default function SignIn() {
       }
     } catch (error) {
       setErrorMessage("Error en la conexión con el servidor");
+      console.log(error);
     } finally {
       setIsLoading(false); // Termina la carga
     }
