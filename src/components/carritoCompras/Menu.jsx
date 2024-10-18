@@ -21,7 +21,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import AddToCart from "./cart";
 
 const MenuModal = ({ open, onClose, products, standName, setCart, categories = [] }) => {
-  const [quantities, setQuantities] = useState([]);
+  const [quantities, setQuantities] = useState({});
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [warningModalOpen, setWarningModalOpen] = useState(false);
@@ -43,35 +43,39 @@ const MenuModal = ({ open, onClose, products, standName, setCart, categories = [
     : products;
 
   useEffect(() => {
-    setQuantities(Array(products.length).fill(0));
+    const initialQuantities = products.reduce((acc, product) => {
+      acc[product._id] = 0;
+      return acc;
+    }, {});
+    setQuantities(initialQuantities);
   }, [products]);
 
-  const increaseQuantity = (index) => {
-    const newQuantities = [...quantities];
-    newQuantities[index] += 1;
-    setQuantities(newQuantities);
+  const increaseQuantity = (productId) => {
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [productId]: prevQuantities[productId] + 1,
+    }));
   };
 
-  const decreaseQuantity = (index) => {
-    const newQuantities = [...quantities];
-    if (newQuantities[index] > 0) {
-      newQuantities[index] -= 1;
-      setQuantities(newQuantities);
-    }
+  const decreaseQuantity = (productId) => {
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [productId]: Math.max(prevQuantities[productId] - 1, 0),
+    }));
   };
 
-  const totalQuantity = quantities.reduce((acc, curr) => acc + curr, 0);
+  const totalQuantity = Object.values(quantities).reduce((acc, curr) => acc + curr, 0);
 
-  const totalPrice = products.reduce((acc, product, index) => {
-    return acc + product.price * quantities[index];
+  const totalPrice = products.reduce((acc, product) => {
+    return acc + product.price * quantities[product._id];
   }, 0);
 
   const handleAddToCart = () => {
     const selectedProducts = products
-      .map((product, index) => ({
+      .map((product) => ({
         productId: product._id,
         standId: product.standId,
-        quantity: quantities[index],
+        quantity: quantities[product._id],
       }))
       .filter((item) => item.quantity > 0);
 
@@ -86,7 +90,11 @@ const MenuModal = ({ open, onClose, products, standName, setCart, categories = [
   };
 
   const resetQuantities = () => {
-    setQuantities(Array(products.length).fill(0));
+    const resetQuantities = products.reduce((acc, product) => {
+      acc[product._id] = 0;
+      return acc;
+    }, {});
+    setQuantities(resetQuantities);
   };
 
   const handleClose = () => {
@@ -163,8 +171,8 @@ const MenuModal = ({ open, onClose, products, standName, setCart, categories = [
         <DialogContent>
           {filteredProducts.length > 0 ? (
             <List>
-              {filteredProducts.map((product, index) => (
-                <React.Fragment key={index}>
+              {filteredProducts.map((product) => (
+                <React.Fragment key={product._id}>
                   <ListItem>
                     <ListItemText
                       primary={product.name}
@@ -179,17 +187,17 @@ const MenuModal = ({ open, onClose, products, standName, setCart, categories = [
                         </>
                       }
                     />
-                    <IconButton onClick={() => decreaseQuantity(index)}>
+                    <IconButton onClick={() => decreaseQuantity(product._id)}>
                       <RemoveIcon />
                     </IconButton>
                     <Typography variant="body2" sx={{ mx: 1 }}>
-                      {quantities[index]}
+                      {quantities[product._id]}
                     </Typography>
-                    <IconButton onClick={() => increaseQuantity(index)}>
+                    <IconButton onClick={() => increaseQuantity(product._id)}>
                       <AddIcon />
                     </IconButton>
                   </ListItem>
-                  {index < products.length - 1 && <Divider sx={{ bgcolor: "#077d6b" }} />}
+                  <Divider sx={{ bgcolor: "#077d6b" }} />
                 </React.Fragment>
               ))}
             </List>

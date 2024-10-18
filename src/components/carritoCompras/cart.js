@@ -30,6 +30,7 @@ export default function AddToCart({ exporProducts, onClose }) {
         }
     };
     console.log(data);
+    console.log(exporProducts);
     return (
         <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
           <DialogTitle sx={{ textAlign: "center", bgcolor: "#077d6b", color: "white" }}>
