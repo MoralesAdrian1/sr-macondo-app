@@ -51,12 +51,15 @@ export default function MyOrder() {
     >
       <br />
       <br />
+      <Typography variant="h4" sx={{paddingTop:4}} textAlign="center">Mis Pedidos</Typography>
+      <Divider sx={{ bgcolor: "#077d6b", my: 1, paddingBottom: 1 }} />
+
       {data.map((order) => (
         <Box>
           {order.user_id === "6701c1f1622fbf1ad45cbed9" && order.status !=="Entregado" ? (
             <Card key={order._id} sx={{ minWidth: 275, mb: 2 }}>
               <CardContent>
-              <Typography variant="h5">Mi Pedido: {order._id}</Typography>
+              <Typography variant="h5">Pedido: {order._id}</Typography>
                 {/* Mostrar la fecha del pedido */}
                 <Typography variant="body1" sx={{ mb: 1 }}>
                   Fecha del Pedido:<strong> {formatDate(order.date)}</strong>{" "}

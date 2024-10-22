@@ -21,13 +21,18 @@ import PaymentIcon from '@mui/icons-material/Payment';
 import MopedIcon from '@mui/icons-material/Moped';
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useState } from 'react';
+import Badge from '@mui/material/Badge';
+import { useEffect, useState } from 'react';
 import { Home } from '@mui/icons-material';
 const drawerWidth = 240;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const idTest = "6701c1f1622fbf1ad45cbed9";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [invisible, setInvisible] = useState(false);
+  const [data, setData] = useState([]);
   function stringToColor(string) {
     let hash = 0;
     let i;
@@ -57,6 +62,9 @@ export default function Navbar() {
     };
   }
 
+
+
+
   const handleDrawerClose = () => {
     setIsClosing(true);
     setMobileOpen(false);
@@ -69,6 +77,38 @@ export default function Navbar() {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+  // useEffect(() => {
+  //   fetchData();
+  //   compareId();
+  // }, []);
+  // const fetchData = async () =>{
+  //   try {
+  //     const response = await fetch(`${API_URL}/user`);
+  //     const users = await response.json();
+  //     setData(users);
+
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // }
+  // const compareId = () => {
+  //   data.forEach((user) => {
+  //     // Comparar el _id del usuario con idTest
+  //     if (user._id === idTest) {
+  //       user.cart.forEach((cart)=>{
+  //         if (cart.total === 0) {
+  //           console.log("El carrito está vacío");
+  //           setInvisible(false);
+  //         } else {
+  //           console.log("El carrito tiene productos:", user.cart.products);
+  //           setInvisible(true);
+  //         }
+  //       })
+  //       // Verificar si el carrito del usuario está vacío
+        
+  //     }
+  //   });
+  // };
 
   //user
   const routes = [
@@ -80,6 +120,7 @@ export default function Navbar() {
     { route: '/', label: 'Salir', icon: <LogoutIcon /> },
     {route:'allPages/encargados/encargos', label:'Todas las Ordenes',icon: <Home/>},
     {route:'allPages/encargados/Pedido', label:'Pedidos por Stands',icon: <Home/>},
+    {route:'allPages/encargados/productos', label:'Actualizar Productos',icon: <Home/>},
   ];
   //solo superAdmin
   const cruds = [
@@ -166,7 +207,10 @@ export default function Navbar() {
         
         {/* Icono de carrito de compras */}
         <IconButton color="inherit" aria-label="shopping cart" sx={{ ml: 2 }} href='/allPages/carrito'>
-          <ShoppingCartIcon />
+        <Badge color="error" variant="dot" invisible={invisible}>
+        <ShoppingCartIcon />
+        </Badge>
+          
         </IconButton>
       </Toolbar>
     </AppBar>
