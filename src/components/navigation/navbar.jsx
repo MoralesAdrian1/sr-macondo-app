@@ -74,10 +74,12 @@ export default function Navbar() {
   const routes = [
     { route: 'allPages/', label: 'Home', icon: <Home /> },
     { route: 'allPages/carrito', label: 'Mi Carrito', icon: <ShoppingCartIcon /> },
-    { route: 'allPages/pedido', label: 'Mi Pedido', icon: <MopedIcon /> },
-    { route: 'allPages/historal', label: 'Historial de compras', icon: <HistoryIcon /> },
+    { route: 'allPages/Pedido', label: 'Mi Pedido', icon: <MopedIcon /> },
+    { route: 'allPages/historial', label: 'Historial de compras', icon: <HistoryIcon /> },
     { route: 'allPages/payment', label: 'Formas de Pago', icon: <PaymentIcon /> },
     { route: '/', label: 'Salir', icon: <LogoutIcon /> },
+    {route:'allPages/encargados/encargos', label:'Todas las Ordenes',icon: <Home/>},
+    {route:'allPages/encargados/Pedido', label:'Pedidos por Stands',icon: <Home/>},
   ];
   //solo superAdmin
   const cruds = [
@@ -91,6 +93,7 @@ export default function Navbar() {
   const adminRoutes =[
     {route:'allPages/ingresos', label:'Productos',icon: <Home/>},
   ]
+
   //encargado
   const encargadosRoutes =[
     {route:'allPages/encargados/encargos', label:'Productos',icon: <Home/>},

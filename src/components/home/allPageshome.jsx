@@ -150,8 +150,6 @@ export default function HomeAllPages() {
             display: "flex",
             overflowX: "auto", // Permite el desplazamiento horizontal
             whiteSpace: "nowrap",
-            border: "2px solid #077d6b", // Borde de 2px color rojo
-          borderRadius: "1px",
             p: 1,
             justifyContent: { xs: "flex-start", md: "center" },  // Centramos en pantallas grandes
           }}

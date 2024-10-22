@@ -25,7 +25,7 @@ export default function Crud() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/catStand`);
+      const response = await fetch(`${API_URL}/catStand`);
       const result = await response.json();
       setData(result);
     } catch (error) {
@@ -47,7 +47,7 @@ export default function Crud() {
     try {
       if (editId) {
         // Actualizar registro
-        await fetch(`http://localhost:3000/api/catStand${editId}`, {
+        await fetch(`${API_URL}/catStand/${editId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export default function Crud() {
         setEditId(null);
       } else {
         // Crear nuevo registro
-        const response = await fetch(`http://localhost:3000/api/catStand`, {
+        const response = await fetch(`${API_URL}/catStand`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export default function Crud() {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`http://localhost:3000/api/catStand/${id}`, { method: "DELETE" });
+      await fetch(`${API_URL}/catStand/${id}`, { method: "DELETE" });
       setData(data.filter((item) => item._id !== id));
       setPositive(true);
     } catch (error) {
