@@ -54,7 +54,7 @@ export default function MiMapa() {
             return (
               <DynamicMarker
                 key={stand._id}
-                width={40}
+                width={60}
                 anchor={[parseFloat(stand.address.latitud), parseFloat(stand.address.longitud)]} // Convertir las coordenadas a números
                 color={markerColor} // Usar el color dinámico
                 onClick={() => handleMarkerClick(stand)} // Manejador del clic en el marcador
