@@ -65,20 +65,22 @@ export default function MyOrder() {
                 <Typography variant="body1" sx={{ mb: 1 }}>
                   Código del Pedido: <strong>{order.code}</strong>
                 </Typography>
+                <Typography variant="body1" >
+                  Productos:
+                </Typography>
 
                 <List>
                   {/* Mapeo de los productos del pedido */}
                   {order.products.map((product, index) => (
                     <ListItem key={product.product_id || index}>
                       <ListItemText
-                        primary={`Productos:`}
-                        secondary={`${product.name}`}
+                        primary={`${product.name}`}
                       />
                     </ListItem>
                   ))}
                 </List>
                 <Divider sx={{ bgcolor: "#077d6b", my: 1 }} />
-                <Typography variant="body1" sx={{ mb: 1 }}>
+                <Typography variant="body1" >
                   Total a Pagar:<strong>{order.total} </strong>
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 4, alignItems: 'center' }}>
@@ -106,7 +108,7 @@ export default function MyOrder() {
               </CardContent>
             </Card>
           ) : (
-            <Typography variant="h3  ">No hay Pedidos Disponibles</Typography>
+            <Typography variant="h3  "></Typography>
           )}
         </Box>
       ))}

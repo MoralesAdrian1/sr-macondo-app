@@ -24,22 +24,7 @@ const style = {
 };
 
 export default function ConfirmModal({ userId, total, products = {}, open, handleClose }) {
-  const [code, setCode] = useState();
-  const generateCode=()=>{
-    for (let i = 0; i < 5; i++) {
-      const code1 = Math.floor(Math.random() * 100) + 1;
-      console.log(code1);
-    }
-    setCode(code);
-  }
-  const extractStandId = (standKey) => {
-    const match = standKey.match(/\(([^)]+)\)/);
-    if (match) {
-      return match[1];
-    }
-    return "";
-  };
-
+  const [code, setCode] = useState('');
   const [dataForm, setDataForm] = useState({
     user_id: userId,
     products: [],
@@ -47,16 +32,35 @@ export default function ConfirmModal({ userId, total, products = {}, open, handl
     date: new Date().toISOString(),
     paymentMethod: '',
     type_delivery: '',
-    status: "Pendiente",
+    status: 'Pendiente',
     address: {
       building: '',
       classroom: '',
     },
-    code:code
+    code: ''  // Inicializamos el campo de código aquí
   });
 
+  // Función para generar un código de 5 dígitos aleatorio
+  const generateCode = () => {
+    const code1 = Math.floor(10000 + Math.random() * 90000);  // Genera un número aleatorio de 5 dígitos
+    setCode(code1.toString());  // Almacena el código como cadena en el estado
+  };
+
+  const extractStandId = (standKey) => {
+    const match = standKey.match(/\(([^)]+)\)/);
+    if (match) {
+      return match[1];
+    }
+    return '';
+  };
+
+  // Generamos el código una vez al montar el componente
   useEffect(() => {
     generateCode();
+  }, []);  // El código solo se generará una vez cuando se monte el componente
+
+  // Transformar los productos y actualizar el formulario con el código generado
+  useEffect(() => {
     const transformedProducts = Object.entries(products).flatMap(([standKey, productArray]) => {
       const standId = extractStandId(standKey);
       return productArray.map((product) => ({
@@ -71,8 +75,9 @@ export default function ConfirmModal({ userId, total, products = {}, open, handl
     setDataForm((prevForm) => ({
       ...prevForm,
       products: transformedProducts,
+      code: code  // Actualizamos el código generado en el formulario
     }));
-  }, [products]);
+  }, [products, code]);  // Dependemos de `products` y `code` para actualizar `dataForm`
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -94,8 +99,8 @@ export default function ConfirmModal({ userId, total, products = {}, open, handl
   };
 
   const handleConfirmClick = () => {
-    console.log("Datos del formulario:", dataForm);
-    createOrder(dataForm,userId);
+    console.log('Datos del formulario:', dataForm);
+    createOrder(dataForm, userId);  // Enviamos el formulario con el código generado
   };
 
   return (
@@ -111,10 +116,10 @@ export default function ConfirmModal({ userId, total, products = {}, open, handl
           width: { xs: '90%', sm: '70%', md: '50%' },  // Ancho responsivo para pantallas móviles
         }}
       >
-        <Typography sx={{margin:1}} id="modal-modal-title" variant="h4" component="h2">
+        <Typography sx={{ margin: 1 }} id="modal-modal-title" variant="h4" component="h2">
           Confirmar Pedido
         </Typography>
-        <Divider sx={{bgcolor:"#077d6b",margin:1}} />
+        <Divider sx={{ bgcolor: '#077d6b', margin: 1 }} />
         <form>
           {/* Fecha y hora */}
           <TextField
@@ -191,12 +196,12 @@ export default function ConfirmModal({ userId, total, products = {}, open, handl
           )}
 
           <Box sx={{ mt: 2 }}>
-            <Button sx={{ bgcolor: "#077d6b"}} href='/allPages' variant="contained" color="primary" fullWidth onClick={handleConfirmClick}>
+            <Button sx={{ bgcolor: '#077d6b' }} variant="contained" color="primary" fullWidth onClick={handleConfirmClick}>
               Confirmar Pedido
             </Button>
           </Box>
         </form>
-        <Button color='error' variant='contained' onClick={handleClose} fullWidth sx={{ mt: 2 }}>
+        <Button color="error" variant="contained" onClick={handleClose} fullWidth sx={{ mt: 2 }}>
           Cancelar
         </Button>
       </Box>

@@ -5,6 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import ConfirmModal from "./ConfirmModal";
 
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 // const API_URL = "http://localhost:3001/api";
 const idTest = "6701c1f1622fbf1ad45cbed9";
@@ -172,9 +173,8 @@ const Carrito = () => {
       {Object.entries(groupedProducts).map(([standKey, products]) => (
         <Box key={standKey} sx={{ mb: 2 }}>
           <Typography
-            variant="h6"
-            color="primary"
-            sx={{ bgcolor: "#077d6b", color: "white" }}
+            variant="h4"
+            sx={{color:"black"}}
           >
             {standKey}
           </Typography>

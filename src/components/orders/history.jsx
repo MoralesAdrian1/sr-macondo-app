@@ -79,7 +79,7 @@ export default function MyHistory() {
                 </List>
                 <Divider sx={{ bgcolor: "#077d6b", my: 1 }} />
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  Total a Pagar:<strong>{order.total} </strong>
+                  Total Pagado:<strong>{order.total} </strong>
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 4, alignItems: 'center' }}>
   
@@ -91,7 +91,7 @@ export default function MyHistory() {
               </CardContent>
             </Card>
           ) : (
-            <Typography variant="h3  ">No hay Pedidos Disponibles</Typography>
+            <Typography variant="h3  "></Typography>
           )}
         </Box>
       ))}
