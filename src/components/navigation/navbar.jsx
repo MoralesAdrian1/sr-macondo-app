@@ -74,7 +74,7 @@ export default function Navbar() {
   const routes = [
     { route: 'allPages/', label: 'Home', icon: <Home /> },
     { route: 'allPages/carrito', label: 'Mi Carrito', icon: <ShoppingCartIcon /> },
-    { route: 'allPages/pedido', label: 'Mi Pedido', icon: <MopedIcon /> },
+    { route: 'allPages/Pedido', label: 'Mi Pedido', icon: <MopedIcon /> },
     { route: 'allPages/historal', label: 'Historial de compras', icon: <HistoryIcon /> },
     { route: 'allPages/payment', label: 'Formas de Pago', icon: <PaymentIcon /> },
     { route: '/', label: 'Salir', icon: <LogoutIcon /> },
