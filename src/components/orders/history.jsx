@@ -8,7 +8,7 @@ import Avatar from "@mui/material/Avatar";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export default function MyOrder() {
+export default function MyHistory() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function MyOrder() {
       <br />
       {data.map((order) => (
         <Box>
-          {order.user_id === "6701c1f1622fbf1ad45cbed9" && order.status !=="Entregado" ? (
+          {order.user_id === "6701c1f1622fbf1ad45cbed9" && order.status ==="Entregado" ? (
             <Card key={order._id} sx={{ minWidth: 275, mb: 2 }}>
               <CardContent>
               <Typography variant="h5">Mi Pedido: {order._id}</Typography>
@@ -86,22 +86,7 @@ export default function MyOrder() {
   <Typography variant="body1">
     Status del Pedido: <strong>{order.status}</strong>
   </Typography>
-  {order.status ==="Pendiente" && (
-      <Avatar sx={{ width: 56, height: 56 }} alt="gift" variant="square" src="/iconos/cacerola.gif" />
-  )}
-  {order.status ==="Preparando" && (
-      <Avatar sx={{ width: 56, height: 56 }} alt="gift" variant="square" src="/iconos/remover.gif" />
-  )}
-  {order.status ==="Listo" && (
-      <Avatar sx={{ width: 56, height: 56 }} alt="gift" variant="square" src="/iconos/bolsa-de-papel.gif" />
-  )}
-  {order.status ==="Entregado" && (
       <Avatar sx={{ width: 56, height: 56 }} alt="gift" variant="square" src="/iconos/bolsa2.gif" />
-  )}
-  {order.status ==="Enviado" && (
-      <Avatar sx={{ width: 56, height: 56 }} variant="square"alt="gift" src="/iconos/scooter.gif" />
-  )}
-
 </Box>
               </CardContent>
             </Card>

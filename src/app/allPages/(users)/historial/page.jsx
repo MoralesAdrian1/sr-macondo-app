@@ -1,7 +1,9 @@
+import MyHistory from "@/components/orders/history";
+
 export default function History(){
     return(
         <>
-        <h1>Historial de Pagos</h1>
+        <MyHistory/>
         </>
     )
 }
