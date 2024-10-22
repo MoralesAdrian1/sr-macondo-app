@@ -1,94 +1,79 @@
 "use client";
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Map, Marker } from 'pigeon-maps';
 
-// Cargar los componentes dinámicamente sin SSR
-const DynamicOverlay = dynamic(() => import('pigeon-maps').then((mod) => mod.Overlay), { ssr: false });
+// Cargar Google Maps dinámicamente sin SSR
+const LoadScript = dynamic(() => import('@react-google-maps/api').then(mod => mod.LoadScript), { ssr: false });
+const GoogleMap = dynamic(() => import('@react-google-maps/api').then(mod => mod.GoogleMap), { ssr: false });
+const DirectionsRenderer = dynamic(() => import('@react-google-maps/api').then(mod => mod.DirectionsRenderer), { ssr: false });
 
-// Coordenadas de puntos de entrega
 const puntosDeEntrega = [
-  { lat: 21.1817, lon: -100.9310, label: 'UTNG' }, 
-  { lat: 21.1717, lon: -100.9315, label: 'Cliente 1' },
-  { lat: 21.1917, lon: -100.9400, label: 'Cliente 2' }
+  { lat: 21.1817, lng: -100.9310, label: 'UTNG' }, 
+  { lat: 21.1717, lng: -100.9315, label: 'Cliente 1' },
+  { lat: 21.1917, lng: -100.9400, label: 'Cliente 2' }
 ];
 
+const containerStyle = {
+  width: '100%',
+  height: '600px'
+};
+
+const center = { lat: 21.1817, lng: -100.9310 }; // Centro inicial del mapa
+
 export default function RutasDePedidos() {
-  const [isClient, setIsClient] = useState(false);
-  const [route, setRoute] = useState([]); // Para almacenar la ruta
+  const [directionsResponse, setDirectionsResponse] = useState(null);
+  const [isClient, setIsClient] = useState(false); // Asegurarse de que estamos en el cliente
 
   useEffect(() => {
-    setIsClient(true);
-    obtenerRuta(); // Llamar a la función para obtener la ruta
-  }, []);
+    setIsClient(true); // Establecer que estamos en el cliente
+    if (isClient) {
+      calcularRuta();
+    }
+  }, [isClient]);
 
-  // Función para obtener la ruta de GraphHopper
-  const obtenerRuta = async () => {
-    const apiKey = '87c62134-8c14-421d-bf88-376c51e60adb'; // Coloca tu API Key de GraphHopper aquí
-    const url = `https://graphhopper.com/api/1/route?point=${puntosDeEntrega[0].lat},${puntosDeEntrega[0].lon}&point=${puntosDeEntrega[1].lat},${puntosDeEntrega[1].lon}&point=${puntosDeEntrega[2].lat},${puntosDeEntrega[2].lon}&vehicle=car&locale=es&key=${apiKey}&type=json&points_encoded=false`;
+  // Función para calcular la ruta entre los puntos de entrega
+  const calcularRuta = () => {
+    if (window.google) {
+      const directionsService = new window.google.maps.DirectionsService();
+      
+      // Configuración de la solicitud de ruta
+      const request = {
+        origin: puntosDeEntrega[0], // Punto de inicio
+        destination: puntosDeEntrega[2], // Punto de fin
+        waypoints: [{ location: puntosDeEntrega[1] }], // Paradas intermedias
+        travelMode: window.google.maps.TravelMode.DRIVING // Modo de transporte
+      };
 
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-
-      // Extraemos la geometría de la ruta
-      const coordinates = data.paths[0].points.coordinates.map(coord => [coord[1], coord[0]]); // Lat, Lon
-      setRoute(coordinates); // Guardar las coordenadas de la ruta
-    } catch (error) {
-      console.error('Error al obtener la ruta:', error);
+      // Llamada a la API Directions de Google Maps para calcular la ruta
+      directionsService.route(request, (result, status) => {
+        if (status === window.google.maps.DirectionsStatus.OK) {
+          setDirectionsResponse(result);
+        } else {
+          console.error(`Error al calcular la ruta: ${status}`);
+        }
+      });
     }
   };
 
   if (!isClient) {
-    return null; // No mostrar nada hasta que esté en el cliente
+    return null; // No renderizamos nada hasta que estemos en el cliente
   }
 
-  // Función para dibujar líneas entre los puntos utilizando la conversión de coordenadas
-  const dibujarRuta = (map) => {
-    if (route.length === 0) return null;
-
-    const points = route.map(coord => {
-      const [x, y] = map.latLngToPixel(coord[0], coord[1]); // Convertir coordenadas geográficas a píxeles
-      return `${x},${y}`;
-    }).join(' ');
-
-    return (
-      <DynamicOverlay anchor={route[0]}>
-        <svg width="600" height="600" style={{ position: 'absolute', top: 0, left: 0 }}>
-          <polyline
-            points={points}
-            stroke="red"
-            strokeWidth={4}
-            fill="none"
-          />
-        </svg>
-      </DynamicOverlay>
-    );
-  };
-
   return (
-    <div style={{ position: 'relative', width: '100%', height: '600px' }}>
-      <Map height={600} defaultCenter={[21.1817, -100.9310]} defaultZoom={13}>
-        {(map) => (
-          <>
-            {/* Marcadores de puntos de entrega */}
-            {puntosDeEntrega.map((punto, index) => (
-              <Marker key={index} width={40} anchor={[punto.lat, punto.lon]}>
-                <div style={{
-                  backgroundColor: 'blue',
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  cursor: 'pointer'
-                }} />
-              </Marker>
-            ))}
-
-            {/* Dibujar la ruta */}
-            {dibujarRuta(map)}
-          </>
+    <LoadScript googleMapsApiKey="AIzaSyB5baWGKSSp6MC2yfpcVrkWu9nwS_3Gm7Y">
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={center}
+        zoom={13}
+      >
+        {/* Servicio de Direcciones de Google */}
+        {directionsResponse && (
+          <DirectionsRenderer
+            directions={directionsResponse}
+            options={{ polylineOptions: { strokeColor: '#ff0000', strokeWeight: 5 }}} // Personalización del estilo de la ruta
+          />
         )}
-      </Map>
-    </div>
+      </GoogleMap>
+    </LoadScript>
   );
 }
