@@ -22,6 +22,7 @@ import MopedIcon from '@mui/icons-material/Moped';
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import LogoutIcon from '@mui/icons-material/Logout';
 import Badge from '@mui/material/Badge';
+import MapIcon from '@mui/icons-material/Map';
 import { useEffect, useState } from 'react';
 import { Home } from '@mui/icons-material';
 const drawerWidth = 240;
@@ -118,9 +119,11 @@ export default function Navbar() {
     { route: 'allPages/historial', label: 'Historial de compras', icon: <HistoryIcon /> },
     { route: 'allPages/payment', label: 'Formas de Pago', icon: <PaymentIcon /> },
     { route: '/', label: 'Salir', icon: <LogoutIcon /> },
+    {route:'allPages/repartidor/mapa', label:'Ver Locaciones',icon: <MapIcon/>},
     {route:'allPages/encargados/encargos', label:'Todas las Ordenes',icon: <Home/>},
     {route:'allPages/encargados/Pedido', label:'Pedidos por Stands',icon: <Home/>},
     {route:'allPages/encargados/productos', label:'Actualizar Productos',icon: <Home/>},
+
   ];
   //solo superAdmin
   const cruds = [
