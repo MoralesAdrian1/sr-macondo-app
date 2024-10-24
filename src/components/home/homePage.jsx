@@ -24,11 +24,12 @@ export default function HomeComponent() {
   const [data2, setData2] = useState([]);
 
   const maxSteps = images.length;
-  useEffect(() => {
-    if (!data.length && !data2.length) {
-      fetchData();
-    }
-  }, []);
+useEffect(() => {
+  if (!data.length && !data2.length) {
+    fetchData();
+  }
+}, [data.length, data2.length]);
+
   useEffect(() => {
     const timer = setInterval(() => {
       handleNext();

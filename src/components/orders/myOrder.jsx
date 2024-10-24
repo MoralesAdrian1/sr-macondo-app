@@ -55,7 +55,7 @@ export default function MyOrder() {
       <Divider sx={{ bgcolor: "#077d6b", my: 1, paddingBottom: 1 }} />
 
       {data.map((order) => (
-        <Box>
+        <Box key={order._id}>
           {order.user_id === "6701c1f1622fbf1ad45cbed9" && order.status !=="Entregado" ? (
             <Card key={order._id} sx={{ minWidth: 275, mb: 2 }}>
               <CardContent>

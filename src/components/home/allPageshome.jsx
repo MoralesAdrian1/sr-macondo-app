@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import MenuModal from "@/components/carritoCompras/Menu";
+import Image from "next/image";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -44,7 +45,8 @@ export default function HomeAllPages() {
     if (!data.length && !data2.length) {
       fetchData();
     }
-  }, []);
+  }, [data.length, data2.length]);
+  
 
   const fetchData = async () => {
     try {
@@ -167,7 +169,7 @@ export default function HomeAllPages() {
             }}
             onClick={() => handleStandFilter("")}
           >
-            <img
+            <Image
               src="/iconos/cocinero.gif" // Imagen genérica para el filtro "Todos"
               alt="Todos los stands"
               style={{ width: "100px", height: "100px", objectFit: "cover" }}
@@ -198,7 +200,7 @@ export default function HomeAllPages() {
               }}
               onClick={() => handleStandFilter(category._id)} // Filtramos por la categoría seleccionada
             >
-              <img
+              <Image
                 src={getImageSource(category.name)} // Get image based on category name
                 alt={category.name}
                 style={{ width: "100px", height: "100px", objectFit: "cover" }}
