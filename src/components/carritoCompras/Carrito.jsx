@@ -177,9 +177,15 @@ const Carrito = () => {
         </Box>
       ))}
 
-      <Button sx={{ bgcolor: "#077d6b", color: "white" }} onClick={handleCheckout}>
-        Pagar (Total: {total.toFixed(2)} $)
-      </Button>
+{Object.keys(groupedProducts).length > 0 ? (
+  <Button sx={{ bgcolor: "#077d6b", color: "white" }} onClick={handleCheckout}>
+    Pagar (Total: {total.toFixed(2)} $)
+  </Button>
+) : (
+  <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
+    No hay productos en el carrito.
+  </Typography>
+)}
 
       {openConfirmation && (
         <ConfirmModal

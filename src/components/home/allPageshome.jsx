@@ -170,10 +170,13 @@ export default function HomeAllPages() {
             onClick={() => handleStandFilter("")}
           >
             <Image
-              src="/iconos/cocinero.gif" // Imagen genérica para el filtro "Todos"
-              alt="Todos los stands"
-              style={{ width: "100px", height: "100px", objectFit: "cover" }}
-            />
+  src="/iconos/cocinero.gif"
+  alt="Todos los stands"
+  width={100}
+  height={100}
+  style={{ objectFit: "cover" }}
+/>
+
             <Typography
   variant="subtitle1"
   sx={{
@@ -201,10 +204,13 @@ export default function HomeAllPages() {
               onClick={() => handleStandFilter(category._id)} // Filtramos por la categoría seleccionada
             >
               <Image
-                src={getImageSource(category.name)} // Get image based on category name
-                alt={category.name}
-                style={{ width: "100px", height: "100px", objectFit: "cover" }}
-              />
+  src={getImageSource(category.name)}
+  alt={category.name}
+  width={100}
+  height={100}
+  style={{ objectFit: "cover" }}
+/>
+
              <Typography
   variant="subtitle1"
   sx={{

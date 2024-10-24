@@ -58,7 +58,7 @@ export default function AddToCart({ exporProducts, onClose }) {
       <DialogContent
         sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}
       >
-        <Image
+        <img
           src="gifts/verificado.gif"
           alt="Productos añadidos"
           style={{ width: "100%", maxWidth: "200px", marginBottom: "5px" }}

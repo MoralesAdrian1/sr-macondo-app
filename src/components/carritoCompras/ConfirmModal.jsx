@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from "react";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -6,7 +6,9 @@ import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import { createOrder } from '../utils/createOrder';
-import { Divider } from '@mui/material';
+import { CircularProgress, Divider } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const style = {
   position: 'absolute',
@@ -25,6 +27,12 @@ const style = {
 
 export default function ConfirmModal({ userId, total, products = {}, open, handleClose }) {
   const [code, setCode] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+const [snackbarMessage, setSnackbarMessage] = useState('');
+const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+
   const [dataForm, setDataForm] = useState({
     user_id: userId,
     products: [],
@@ -98,12 +106,43 @@ export default function ConfirmModal({ userId, total, products = {}, open, handl
     }));
   };
 
-  const handleConfirmClick = () => {
+const handleConfirmClick = async () => {
+  if (!dataForm.paymentMethod || !dataForm.type_delivery || (dataForm.type_delivery === 'Envio' && (!dataForm.address.building || !dataForm.address.classroom))) {
+    setSnackbarMessage('Por favor, complete todos los campos requeridos.');
+    setSnackbarSeverity('error');
+    setSnackbarOpen(true);
+    return;
+  }
+  
+  setLoading(true);
+  
+  try {
     console.log('Datos del formulario:', dataForm);
-    createOrder(dataForm, userId);  // Enviamos el formulario con el código generado
-  };
+    await createOrder(dataForm, userId);
+    setLoading(false);
+    
+    // Mostrar el mensaje de éxito
+    setSnackbarMessage('Pedido creado exitosamente.');
+    setSnackbarSeverity('success');
+    setSnackbarOpen(true);
+    
+    // Cerrar el modal y recargar la página después de mostrar la alerta de éxito
+    handleClose();
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+  } catch (error) {
+    console.error('Error creando el pedido:', error);
+    setLoading(false);
+    setSnackbarMessage('Error al crear el pedido, inténtelo de nuevo.');
+    setSnackbarSeverity('error');
+    setSnackbarOpen(true);
+  }
+};
 
+  
   return (
+    <>
     <Modal
       open={open}
       onClose={handleClose}
@@ -116,6 +155,25 @@ export default function ConfirmModal({ userId, total, products = {}, open, handl
           width: { xs: '90%', sm: '70%', md: '50%' },  // Ancho responsivo para pantallas móviles
         }}
       >
+        {loading && (
+    <Box
+      sx={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        zIndex: 1301,
+      }}
+    >
+      <CircularProgress />
+    </Box>
+  )}
+    <Box
+    sx={{
+      opacity: loading ? 0.5 : 1,
+      pointerEvents: loading ? 'none' : 'auto',
+    }}
+  >
         <Typography sx={{ margin: 1 }} id="modal-modal-title" variant="h4" component="h2">
           Confirmar Pedido
         </Typography>
@@ -123,6 +181,7 @@ export default function ConfirmModal({ userId, total, products = {}, open, handl
         <form>
           {/* Fecha y hora */}
           <TextField
+          required
             label="Fecha y Hora para tu pedido"
             type="datetime-local"
             name="date"
@@ -138,6 +197,7 @@ export default function ConfirmModal({ userId, total, products = {}, open, handl
           {/* Método de pago */}
           <TextField
             select
+            required
             label="Método de Pago"
             name="paymentMethod"
             value={dataForm.paymentMethod}
@@ -151,6 +211,7 @@ export default function ConfirmModal({ userId, total, products = {}, open, handl
 
           {/* Tipo de entrega */}
           <TextField
+          required
             select
             label="Tipo de Entrega"
             name="type_delivery"
@@ -168,6 +229,7 @@ export default function ConfirmModal({ userId, total, products = {}, open, handl
             <>
               {/* Seleccionar Edificio */}
               <TextField
+              required
                 select
                 label="Edificio"
                 name="building"
@@ -185,6 +247,7 @@ export default function ConfirmModal({ userId, total, products = {}, open, handl
 
               {/* Texto libre para salón */}
               <TextField
+              required
                 label="Salón"
                 name="classroom"
                 value={dataForm.address.classroom}
@@ -205,6 +268,13 @@ export default function ConfirmModal({ userId, total, products = {}, open, handl
           Cancelar
         </Button>
       </Box>
+      </Box>
     </Modal>
+    <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
+    <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+      {snackbarMessage}
+    </Alert>
+  </Snackbar>
+</>  
   );
 }
