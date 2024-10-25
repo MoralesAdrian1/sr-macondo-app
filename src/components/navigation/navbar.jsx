@@ -25,15 +25,34 @@ import Badge from '@mui/material/Badge';
 import MapIcon from '@mui/icons-material/Map';
 import { useEffect, useState } from 'react';
 import { Home } from '@mui/icons-material';
+import { getUser, logout } from '@/services/auth';
+import { useRouter } from "next/navigation"; // Importa el hook useRouter
 const drawerWidth = 240;
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const idTest = "6701c1f1622fbf1ad45cbed9";
 
 export default function Navbar() {
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [invisible, setInvisible] = useState(false);
+  const [user, setUser] = useState({});
   const [data, setData] = useState([]);
+  const [userData, setUserData] = useState(null); // Estado inicial
+
+  const settings = userData
+  ? [
+      { name: userData.nombre, action: null },
+      { name: "Account", action: null },
+      { name: "Dashboard", action: null },
+      { name: "Logout", action: logout },
+    ]
+  : [];
+
+  const handleCloseUserMenu = () => {
+      logout();
+      router.push("/");
+  };
   function stringToColor(string) {
     let hash = 0;
     let i;
@@ -78,6 +97,15 @@ export default function Navbar() {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+  useEffect(() => {
+    const fetchedUser = getUser();
+    if (fetchedUser) {
+      setUserData(fetchedUser);
+    }
+    const user = getUser();
+    setUserData(user);
+  }, []);
+console.log(user);
   // useEffect(() => {
   //   fetchData();
   //   compareId();
@@ -180,6 +208,14 @@ export default function Navbar() {
           </ListItem>
         ))}
       </List>
+      <ListItem>
+            <ListItemButton  onClick={() => handleCloseUserMenu()}>
+              <ListItemIcon>
+                <LogoutIcon/>
+              </ListItemIcon>
+              <ListItemText primary="Salir" />
+            </ListItemButton>
+          </ListItem>
     </div>
   );
 

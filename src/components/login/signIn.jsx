@@ -7,6 +7,7 @@ import { saveToken, saveUser } from "@/services/auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+
 const CustomTextField = ({ label, type, value, onChange }) => (
   <TextField
     label={label}
@@ -61,7 +62,7 @@ export default function SignIn() {
       if (res.ok) {
         saveToken(data.token);
         saveUser(data.user);
-        router.push("/");
+        router.push("/allPages");
       } else {
         setErrorMessage(data.message || "Error al iniciar sesión");
       }
@@ -150,7 +151,6 @@ export default function SignIn() {
             "&:hover": { bgcolor: "#065b52" },
           }}
           type="submit"
-          href="/allPages"
         >
           {isLoading ? "Cargando..." : "Iniciar Sesión"}
         </Button>
