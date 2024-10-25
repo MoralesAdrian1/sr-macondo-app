@@ -59,8 +59,8 @@ export default function MiMapa() {
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '500px', marginTop: '60px' }}>
-      <DynamicMap height={500} defaultCenter={[21.1561, -100.9317]} defaultZoom={14} />
+    <div style={{ position: 'relative', width: '100%', height: '900px', marginTop: '60px' }}>
+      <DynamicMap height={700} defaultCenter={[21.1561, -100.9317]} defaultZoom={14} />
 
       {/* Mostrar información de la nueva orden en un modal */}
       {selectedOrder && (

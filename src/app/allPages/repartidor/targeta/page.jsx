@@ -47,6 +47,15 @@ const CheckoutForm = () => {
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ p: 2, boxShadow: 3, borderRadius: 2 }}>
+      {/* Imagen de la tarjeta de crédito */}
+      <CardMedia
+        component="img"
+        height="200"
+        image="https://d31dn7nfpuwjnm.cloudfront.net/images/valoraciones/0034/7801/diferencia-tarjeta-credito-debito.png?1565359275"  // URL actualizada
+        alt="Tarjeta de crédito"
+        sx={{ mb: 2 }}
+      />
+
       {/* Información del producto */}
       <Typography variant="h5" align="center" gutterBottom>
         Precio: $100
