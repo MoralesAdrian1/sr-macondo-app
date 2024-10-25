@@ -22,7 +22,7 @@ const style = {
   p: 4,
   borderRadius: 2,
   overflow: 'auto',  // Para manejar contenidos largos
-  maxHeight: '90vh',  // Limitar altura en pantallas pequeñas
+  maxHeight: '90vh',  // Limiar altura en pantallas pequeñas
 };
 
 export default function ConfirmModal({ userId, total, products = {}, open, handleClose }) {
